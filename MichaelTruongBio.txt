@@ -1,0 +1,1 @@
+My name is Michael Truong, a first year student at Drexel University majoring in Computer Science. As a first year student, I am learning many programming languages and projects with experience in python, java, tranquility and html. Some of my favorite projects so far are the Virtual Pest and this current gitLab project.
