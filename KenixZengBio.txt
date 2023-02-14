@@ -1,0 +1,1 @@
+My name is Kenix Zeng and I'm taking CS102 at Drexel University. I've experience in Java from High school courses and we're currently doing a project on building a app using kyiv which uses python.
