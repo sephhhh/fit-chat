@@ -1,20 +1,21 @@
 MDScreen:
-    md_bg_color:56/255,40/255,81/255,1
+    md_bg_color:51/255,153/255,255/255,1
     MDBoxLayout:
         orientation:'vertical'
         MDBoxLayout:
-            size_hint_y:.25
+            size_hint_y:.15
             padding:dp(25)
             MDBoxLayout:
                 orientation:"vertical"
                 MDLabel:
                     text:"Fit Chat"
                     font_style:"H4"
+                    text_color:'white'
                 MDBoxLayout:
                     adaptive_size:True
                     spacing:dp(10)
                     MDLabel:
-                        text:"Homepage"
+                        text:"Profile Page"
                         text_size:None,None
                         adaptive_width:True
                     MDIcon:
@@ -23,7 +24,7 @@ MDScreen:
             MDIconButton:
                 icon:""
         MDGridLayout:
-            size_hint_y:.75
+            size_hint_y:.60
             cols:2
             padding:[dp(15),dp(15),dp(15),dp(35)]
             spacing:dp(15)
@@ -51,9 +52,47 @@ MDScreen:
                 items_count:""
                 subtext:""
 
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y:.15
+            cols:3
+
+            MDBottomAppBar:
+                title: "Bottom Navbar"
+            MDBottomNavigation:
+                #colors
+
+                MDBottomNavigationItem:
+                    name: "screen 1"
+                    text: "Home Page"
+                    icon: 'home'
+
+                    MDLabel:
+                        text: "Home Page"
+                        halign: 'center'
+
+                MDBottomNavigationItem:
+                    name: "screen 2"
+                    text: "Matching"
+                    icon: 'account-multiple-plus'
+
+                    MDLabel:
+                        text: "Matching"
+                        halign: 'center'
+
+                MDBottomNavigationItem:
+                    name: "screen 3"
+                    text: "Profile"
+                    icon: 'account'
+
+                    MDLabel:
+                        text: "Profile"
+                        halign: 'center'
+
+
 
 <ElementCard@MDCard>:
-    md_bg_color:69/255,55/255,86/255,1
+    md_bg_color:102/255,178/255,255/255, 1
     padding:dp(15)
     spacing:dp(15)
     radius:dp(25)
@@ -79,3 +118,4 @@ MDScreen:
         MDLabel:
             halign:"center"
             text:root.items_count
+
