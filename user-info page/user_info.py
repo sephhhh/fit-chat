@@ -15,13 +15,11 @@ class testApp(MDApp):
     def build(self):
         return Builder.load_file('testApp.kv')
 
-
-
+    global firebase
+    firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
     def get_data(self):
         data = {'Name': '',
                 'Biography': ''}
-        global firebase
-        firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
         name = self.root.ids.name.text
         biography = self.root.ids.bio.text
         print(name)
