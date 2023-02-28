@@ -1,0 +1,24 @@
+MDScreen:
+    MDTextField:
+        id: name
+        hint_text: "Enter Full Name"
+        help_text_mode: "on_focus"
+        pos_hint: {'center_x':0.5, 'center_y': 0.9}
+        size_hint_x: None
+        width: 500
+
+    MDTextField:
+        id: bio
+        hint_text: "Describe Yourself in a Biography"
+        multiline: True
+        help_text_mode: "on_focus"
+        pos_hint: {'center_x':0.5, 'center_y': 0.7}
+        size_hint_x: None
+        width: 500
+
+    MDRectangleFlatButton:
+        text: 'Submit Profile'
+        pos_hint: {'center_x':0.5, 'center_y': 0.3}
+        on_press: app.get_data()
+        size_hint: .3,.05
+        background_color: 51/255,153/255,255/255,1
