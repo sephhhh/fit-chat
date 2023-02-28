@@ -10,22 +10,26 @@ from kivy.properties import ObjectProperty
 from kivymd.uix.button import MDRectangleFlatButton
 
 Window.size = (350, 650)
-firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
-
-data = {'Name' : name,
-        'Biography' : biography}
-
-firebase.post('')
 
 class testApp(MDApp):
     def build(self):
         return Builder.load_file('testApp.kv')
 
+
+
     def get_data(self):
+        data = {'Name': '',
+                'Biography': ''}
+        global firebase
+        firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
         name = self.root.ids.name.text
         biography = self.root.ids.bio.text
         print(name)
         print(biography)
+        data['Name'] = name
+        data['Biography'] = biography
+
+        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
 
 if __name__ == '__main__':
     testApp().run()
