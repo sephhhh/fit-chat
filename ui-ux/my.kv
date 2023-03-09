@@ -1,188 +1,200 @@
-BoxLayout:
-    orientation: 'vertical'
+<MainScreenManager>:
+    MDScreen:
+        name: "login"
+        md_bg_color:51/255,153/255,255/255,1
+        MDCard:
+            size_hint:None, None
+            size: 600, 800
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 10
+            padding: 25
+            spacing: 25
+            orientation: 'vertical'
 
-    MDBottomAppBar:
-        title: "Bottom Navbar"
-    MDBottomNavigation:
-        #colors
+            MDLabel
+                text: "Fit Chat"
+                font_size: 72
+                halign: 'center'
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding_y: 25
 
-        MDBottomNavigationItem:
-            name: "screen 1"
-            text: "Login"
-            icon: 'login'
-            MDScreen:
-                md_bg_color:51/255,153/255,255/255,1
-                MDCard:
-                    size_hint:None, None
-                    size: 600, 800
-                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                    elevation: 10
-                    padding: 25
-                    spacing: 25
-                    orientation: 'vertical'
+            MDTextField:
+                id: email
+                hint_text: "Enter email"
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                size_hint_x: None
+                icon_right: "account"
+                width: 400
 
-                    MDLabel
-                        text: "Fit Chat"
-                        font_size: 78
-                        halign: 'center'
-                        size_hint_y: None
-                        height: self.texture_size[1]
-                        padding_y: 15
+            MDTextField:
+                id: password
+                hint_text: "Enter password"
+                icon_right: "eye-off"
+                multiline: True
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                size_hint_x: None
+                password: True
+                width: 400
 
-                    MDTextField:
-                        id: email
-                        hint_text: "Enter email"
-                        help_text_mode: "on_focus"
-                        pos_hint: {'center_x':0.5, 'center_y': 0.9}
-                        size_hint_x: None
-                        icon_right: "account"
-                        width: 400
+            MDRectangleFlatButton:
+                text: 'Submit Login Information'
+                pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                on_press: app.get_data()
+                width: 200
+                height: 100
+                background_color: 51/255,153/255,255/255,1
 
-                    MDTextField:
-                        id: password
-                        hint_text: "Enter password"
-                        icon_right: "eye-off"
-                        multiline: True
-                        help_text_mode: "on_focus"
-                        pos_hint: {'center_x':0.5, 'center_y': 0.7}
-                        size_hint_x: None
-                        password: True
-                        width: 400
-
-                    MDRectangleFlatButton:
-                        text: 'Submit Login Information'
-                        pos_hint: {'center_x':0.5, 'center_y': 0.3}
-                        on_press: app.get_data()
-                        width: 200
-                        height: 100
-                        background_color: 51/255,153/255,255/255,1
-
-                    MDLabel:
-                        id: login_message
-                        text:
-                        font: 20
-                        halign: "center"
-                        pos_hint: {'center_x':0.5, 'center_y': 0.3}
+            MDLabel:
+                id: login_message
+                text:
+                font: 20
+                halign: "center"
+                pos_hint: {'center_x':0.5, 'center_y': 0.3}
 
 
+    MDScreen:
+        name: "homepage"
+        BoxLayout:
+            orientation: 'vertical'
 
+            MDBottomAppBar:
+                title: "Bottom Navbar"
+            MDBottomNavigation:
+                #colors
 
-        MDBottomNavigationItem:
-            name: "screen 2"
-            text: "Matching"
-            icon: 'account-multiple-plus'
-            MDScreen:
-                md_bg_color:51/255,153/255,255/255,1
-            MDBoxLayout:
-                orientation:'vertical'
-                MDBoxLayout:
-                    size_hint_y:.15
-                    padding:dp(25)
-                    MDBoxLayout:
-                        orientation:"vertical"
+                MDBottomNavigationItem:
+                    name: "screen 1"
+                    text: "Login"
+                    icon: 'login'
+                    MDScreen:
+                        md_bg_color:51/255,153/255,255/255,1
                         MDLabel:
-                            text:"Fit Chat"
-                            font_style:"H4"
-                            text_color:'white'
-                        MDBoxLayout:
-                            adaptive_size:True
-                            spacing:dp(10)
-                            MDLabel:
-                                text:"Matching Page"
-                                text_size:None,None
-                                adaptive_width:True
-                            MDIcon:
-                                icon:'star'
+                            text: "Hi"
 
-                    MDIconButton:
-                        icon:""
-                MDGridLayout:
-                    size_hint_y:.60
-                    cols:2
-                    padding:[dp(15),dp(15),dp(15),dp(35)]
-                    spacing:dp(15)
-                    ElementCard:
-                        icon: ''
-                        text:"Person 1 chat"
-                        subtext:""
-                        items_count:""
-
-                    ElementCard:
-                        image:""
-                        text:"Person 2 chat"
-                        subtext:""
-                        items_count:""
-
-                    ElementCard:
-                        image:""
-                        text:"Person 3 chat"
-                        subtext:""
-                        items_count:""
-
-                    ElementCard:
-                        image:""
-                        text:"Person 4 chat"
-                        items_count:""
-                        subtext:""
-
-        MDBottomNavigationItem:
-            name: "screen 3"
-            text: "Profile"
-            icon: 'account'
-            MDScreen:
-                md_bg_color:51/255,153/255,255/255,1
-            MDBoxLayout:
-                orientation:'vertical'
-                MDBoxLayout:
-                    size_hint_y:.15
-                    padding:dp(25)
+                MDBottomNavigationItem:
+                    name: "screen 2"
+                    text: "Matching"
+                    icon: 'account-multiple-plus'
+                    MDScreen:
+                        md_bg_color:51/255,153/255,255/255,1
                     MDBoxLayout:
-                        orientation:"vertical"
-                        MDLabel:
-                            text:"Fit Chat"
-                            font_style:"H4"
-                            text_color:'white'
+                        orientation:'vertical'
                         MDBoxLayout:
-                            adaptive_size:True
-                            spacing:dp(10)
-                            MDLabel:
-                                text:"Profile Page"
-                                text_size:None,None
-                                adaptive_width:True
-                            MDIcon:
-                                icon:'star'
+                            size_hint_y:.15
+                            padding:dp(25)
+                            MDBoxLayout:
+                                orientation:"vertical"
+                                MDLabel:
+                                    text:"Fit Chat"
+                                    font_style:"H4"
+                                    text_color:'white'
+                                MDBoxLayout:
+                                    adaptive_size:True
+                                    spacing:dp(10)
+                                    MDLabel:
+                                        text:"Matching Page"
+                                        text_size:None,None
+                                        adaptive_width:True
+                                    MDIcon:
+                                        icon:'star'
 
-                    MDIconButton:
-                        icon:""
-                MDGridLayout:
-                    size_hint_y:.60
-                    cols:2
-                    padding:[dp(15),dp(15),dp(15),dp(35)]
-                    spacing:dp(15)
-                    ElementCard:
-                        icon: ''
-                        text:"Profile Picture"
-                        subtext:""
-                        items_count:""
-                        image:'/Users/crimzon/Downloads/stockAvatar.jpeg'
+                            MDIconButton:
+                                icon:""
+                        MDGridLayout:
+                            size_hint_y:.60
+                            cols:2
+                            padding:[dp(15),dp(15),dp(15),dp(35)]
+                            spacing:dp(15)
+                            ElementCard:
+                                icon: ''
+                                text:"Person 1 chat"
+                                subtext:""
+                                items_count:""
 
-                    ElementCard:
-                        image:""
-                        text:"Name"
-                        subtext:""
-                        items_count:""
+                            ElementCard:
+                                image:""
+                                text:"Person 2 chat"
+                                subtext:""
+                                items_count:""
 
-                    ElementCard:
-                        image:""
-                        text:"Biography"
-                        subtext:""
-                        items_count:""
+                            ElementCard:
+                                image:""
+                                text:"Person 3 chat"
+                                subtext:""
+                                items_count:""
 
-                    ElementCard:
-                        image:""
-                        text:""
-                        items_count:"Interests"
-                        subtext:""
+                            ElementCard:
+                                image:""
+                                text:"Person 4 chat"
+                                items_count:""
+                                subtext:""
+
+                MDBottomNavigationItem:
+                    name: "screen 3"
+                    text: "Profile"
+                    icon: 'account'
+                    MDScreen:
+                        md_bg_color:51/255,153/255,255/255,1
+                    MDBoxLayout:
+                        orientation:'vertical'
+                        MDBoxLayout:
+                            size_hint_y:.15
+                            padding:dp(25)
+                            MDBoxLayout:
+                                orientation:"vertical"
+                                MDLabel:
+                                    text:"Fit Chat"
+                                    font_style:"H4"
+                                    text_color:'white'
+                                MDBoxLayout:
+                                    adaptive_size:True
+                                    spacing:dp(10)
+                                    MDLabel:
+                                        text:"Profile Page"
+                                        text_size:None,None
+                                        adaptive_width:True
+                                    MDIcon:
+                                        icon:'star'
+
+                            MDIconButton:
+                                icon:""
+                        MDGridLayout:
+                            size_hint_y:.60
+                            cols:2
+                            padding:[dp(15),dp(15),dp(15),dp(35)]
+                            spacing:dp(15)
+
+                            ElementCard:
+                                icon: ''
+                                text:"Profile Picture"
+                                subtext:""
+                                items_count:""
+                                image:'/Users/crimzon/Downloads/stockAvatar.jpeg'
+
+                            ElementCard:
+                                id: picture
+                                image:""
+                                text:"Name"
+                                subtext:""
+                                items_count:""
+
+                            ElementCard:
+                                id: biography
+                                MDLabel:
+                                    halign: "center"
+                                    valign: "top"
+                                    text: "Biography"
+                                    font_style: 'H5'
+                                    valign: 'top'
+
+                            ElementCard:
+                                image:""
+                                text:""
+                                items_count:"Interests"
+                                subtext:""
 
 <ElementCard@MDCard>:
     md_bg_color:102/255,178/255,255/255, 1
@@ -190,14 +202,13 @@ BoxLayout:
     spacing:dp(15)
     radius:dp(25)
     ripple_behavior: True
-    image:''
+
+    image:""
     text:""
-    items_count:""
     subtext:''
 
     orientation:'vertical'
-    Image:
-        source:root.image
+
     MDBoxLayout:
         orientation:'vertical'
         MDLabel:
@@ -208,36 +219,7 @@ BoxLayout:
             halign:"center"
             font_style:"Caption"
             text:root.subtext
-        MDLabel:
-            halign:"center"
-            text:root.items_count
 
-<HomePage>:
-    name: 'home'
 
-    BoxLayout:
-        orientation: "vertical"
-        size: root.width, root.height
 
-        Label:
-            text: "Fit Chat Home Page"
 
-<MatchingPage>:
-    name: 'matching'
-
-    BoxLayout:
-        orientation: "vertical"
-        size: root.width, root.height
-
-        Label:
-            text: "Fit Chat Matching"
-
-<ProfilePage>
-    name: 'profile'
-
-    BoxLayout:
-        orientation: "vertical"
-        size: root.width, root.height
-
-        Label:
-            text: "Fit Chat Profile"
