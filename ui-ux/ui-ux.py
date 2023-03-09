@@ -9,38 +9,48 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import json
 
+
 Window.size = (350, 700)
+class MainScreenManager(ScreenManager):
+    pass
 
 class MyApp(MDApp):
     def build(self):
-        self.title = 'Home Page'
         self.theme_cls.theme_style = 'Dark'
-        return Builder.load_file('test.kv')
+        Builder.load_file('testing.kv')
+        return MainScreenManager()
 
-    global doc_ref
+
+    #global doc_ref
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)
 
     global firestore
     firestore = firestore.client()
-    
+
     def initializeProfile(self): #function to initialize profile after successful login
+        name = y["Biography"] #in progress
+        self.root.ids.biography.subtext = name
+        print("Hello")
         pass
 
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
         password = self.root.ids.password.text
+        print(email)
         try:  # get database data
             doc_ref = firestore.collection("user_login").document(email)
             doc = doc_ref.get()
+            global y
             y = json.loads(json.dumps(doc.to_dict()))
             print(y["password"])
             if str(doc_ref.id) == email and (password == y["password"]):
                 print("Login Successful")
                 self.root.ids.login_message.text = "Successful Login"
-                # initialize profile informatioon function
-                initializeProfile()
+                self.root.current = "homepage"
+                # initialize profile information function
+                self.initializeProfile()
             else:
                 print("Invalid Password")
                 self.root.ids.login_message.text = "Invalid Password"
@@ -51,8 +61,12 @@ class MyApp(MDApp):
             doc_ref.set({
                 'email': email,
                 'password': password,
+                'biography': 'None',
+                'name': "None"
             })
             self.root.ids.login_message.text = "Account Created"
+            self.initializeProfile()
+
 
 if __name__ == '__main__':
     MyApp().run()
