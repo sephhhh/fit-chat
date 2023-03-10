@@ -67,8 +67,8 @@
 
                 MDBottomNavigationItem:
                     name: "screen 1"
-                    text: "Login"
-                    icon: 'login'
+                    text: "Profile"
+                    icon: 'account'
                     MDScreen:
                         name: "profile"
                         #md_bg_color:51/255,153/255,255/255,1
@@ -103,11 +103,11 @@
                             MDLabel:
                                 id: biography
                                 text: "No biography set"
-                                pos_hint: {"center_x": .5, "center_y": .70}
+                                pos_hint: {"center_x": .5, "center_y": .68}
                                 halign: 'center'
                                 elevation: 10
                                 size_hint: .85, .09
-                                font_style: "H5"
+                                font_style: "H6"
                                 theme_text_color: "Custom"
                                 text_color: 63/255, 63/255, 191/255, 1
 
@@ -174,9 +174,32 @@
 
                 MDBottomNavigationItem:
                     name: "screen 3"
-                    text: "Profile"
-                    icon: 'account'
+                    text: "Settings"
+                    icon: 'account-cog'
                     MDScreen:
+                        MDTextField:
+                            id: change_name
+                            hint_text: "Enter Full Name"
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                            size_hint_x: None
+                            width: 500
+
+                        MDTextField:
+                            id: change_bio
+                            hint_text: "Describe Yourself in a Biography"
+                            multiline: True
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                            size_hint_x: None
+                            width: 500
+
+                        MDRectangleFlatButton:
+                            text: 'Submit Profile'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            on_press: app.change_data()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
 
 
 <ElementCard@MDCard>:
