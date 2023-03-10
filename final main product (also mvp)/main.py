@@ -11,7 +11,6 @@ import json
 from os import walk
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
-from kivy.properties import StringProperty
 from functools import partial
 
 
@@ -141,11 +140,13 @@ class MyApp(MDApp):
         self.root.ids.Chat.text = newMessages
 
     def send_data(self):
-        data = {'Message': ''}
+        email = self.root.ids.email.text
+        data = {'Message': '',
+                'Email': email}
         message = self.root.ids.message.text
         data['Message'] = message
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
-        self.root.ids.Chat.text += '\nYou said: ' + message
+        self.root.ids.Chat.text += "\n" + email + ' said: ' + message
 
 if __name__ == '__main__':
     MyApp().run()
