@@ -8,6 +8,9 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import json
+from os import walk
+from kivy.uix.button import ButtonBehavior
+from kivy.uix.image import Image
 
 
 Window.size = (350, 700)
@@ -16,8 +19,8 @@ class MainScreenManager(ScreenManager):
 
 class MyApp(MDApp):
     def build(self):
-        self.theme_cls.theme_style = 'Dark'
-        Builder.load_file('testing.kv')
+        self.theme_cls.theme_style = 'Light'
+        Builder.load_file('testing2.kv')
         return MainScreenManager()
 
 
@@ -30,9 +33,15 @@ class MyApp(MDApp):
     firestore = firestore.client()
 
     def initializeProfile(self): #function to initialize profile after successful login
-        name = y["Biography"] #in progress
-        self.root.ids.biography.subtext = name
-        print("Hello")
+        name = y["name"]
+        self.root.ids.name.text = name
+
+        bioText = y["bio"]
+        self.root.ids.biography.text = bioText
+
+        profile = y['profilePicture']
+        self.root.ids.profile_picture.source = profile
+
         pass
 
     def get_data(self):  # function for submit button
@@ -61,11 +70,12 @@ class MyApp(MDApp):
             doc_ref.set({
                 'email': email,
                 'password': password,
-                'biography': 'None',
-                'name': "None"
+                'profilePicture': "fitChatAvatars/defaultAvatar.png",
+                'bio': '"No Biography Written"',
+                'name': "No Name Set",
             })
             self.root.ids.login_message.text = "Account Created"
-            self.initializeProfile()
+            #self.initializeProfile()
 
 
 if __name__ == '__main__':
