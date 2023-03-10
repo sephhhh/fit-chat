@@ -12,11 +12,19 @@ from os import walk
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.properties import StringProperty
+from functools import partial
 
 
 Window.size = (350, 700)
+
+
+class ImageButton(ButtonBehavior, Image):
+    pass
+
+
 class MainScreenManager(ScreenManager):
     pass
+
 
 class MyApp(MDApp):
     def build(self):
@@ -90,6 +98,35 @@ class MyApp(MDApp):
             'name': name,
         })
         self.root.current = 'login'
+
+    def change_avatar(self):
+        self.root.current = 'change_avatar'
+        avatar_grid = self.root.ids.avatar_grid
+        for root_dir, folders, files in walk("fitChatAvatars"):
+            for f in files:
+                img = ImageButton(source="fitChatAvatars/" + f, on_release=partial(self.change_avatar_pic, f))
+                avatar_grid.add_widget(img)
+    def change_avatar_pic(self, image, widget_id):
+        self.root.ids.profile_picture.source = "fitChatAvatars/" + image
+
+        #firebase
+        email = self.root.ids.email.text
+        password = self.root.ids.password.text
+        bio = self.root.ids.biography.text
+        name = self.root.ids.name.text
+        profilePicture = "fitChatAvatars/" + image
+        doc_ref = firestore.collection("user_login").document(email)
+        doc_ref.set({
+            'email': email,
+            'password': password,
+            'profilePicture': profilePicture,
+            'bio': bio,
+            'name': name,
+        })
+
+        #return back
+        self.root.ids.change_text.text = "Avatar Successfully Changed"
+        self.root.current = 'homepage'
 
 if __name__ == '__main__':
     MyApp().run()
