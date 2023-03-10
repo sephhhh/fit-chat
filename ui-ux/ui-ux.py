@@ -11,6 +11,7 @@ import json
 from os import walk
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
+from kivy.properties import StringProperty
 
 
 Window.size = (350, 700)
@@ -23,8 +24,6 @@ class MyApp(MDApp):
         Builder.load_file('testing2.kv')
         return MainScreenManager()
 
-
-    #global doc_ref
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)
@@ -77,6 +76,20 @@ class MyApp(MDApp):
             self.root.ids.login_message.text = "Account Created"
             #self.initializeProfile()
 
+    def change_data(self):
+        email = self.root.ids.email.text
+        password = self.root.ids.password.text
+        change_bio = self.root.ids.change_bio.text
+        name = self.root.ids.change_name.text
+        doc_ref = firestore.collection("user_login").document(email)
+        doc_ref.set({
+            'email': email,
+            'password': password,
+            'profilePicture': "fitChatAvatars/defaultAvatar.png",
+            'bio': change_bio,
+            'name': name,
+        })
+        self.root.current = 'login'
 
 if __name__ == '__main__':
     MyApp().run()
