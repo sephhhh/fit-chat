@@ -29,7 +29,7 @@ class MainScreenManager(ScreenManager):
 class MyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Light'
-        Builder.load_file('testing2.kv')
+        Builder.load_file('main.kv')
         return MainScreenManager()
 
 
