@@ -104,8 +104,9 @@ class MyApp(MDApp):
         avatar_grid = self.root.ids.avatar_grid
         for root_dir, folders, files in walk("fitChatAvatars"):
             for f in files:
-                img = ImageButton(source="fitChatAvatars/" + f, on_release=partial(self.change_avatar_pic, f))
-                avatar_grid.add_widget(img)
+                if f != '.DS_Store': #for mac folders
+                    img = ImageButton(source="fitChatAvatars/" + f, on_release=partial(self.change_avatar_pic, f))
+                    avatar_grid.add_widget(img)
 
     def change_avatar_pic(self, image, widget_id):
         self.root.ids.profile_picture.source = "fitChatAvatars/" + image
