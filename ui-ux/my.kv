@@ -70,9 +70,49 @@
                     text: "Login"
                     icon: 'login'
                     MDScreen:
-                        md_bg_color:51/255,153/255,255/255,1
-                        MDLabel:
-                            text: "Hi"
+                        name: "profile"
+                        #md_bg_color:51/255,153/255,255/255,1
+                        MDFloatLayout:
+                            #md_bg_color:51/255,153/255,255/255,1
+                            MDLabel:
+                                text: "Fit Chat"
+                                font_style: "H3"
+                                pos_hint: {"center_x": .55, "center_y": .93}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDLabel:
+                                id: name
+                                text:"Michael Truong"
+                                font_style: "H5"
+                                pos_hint: {"center_x": .55, "center_y": .86}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            Image:
+                                id: profile_picture
+                                source: "fitChatAvatars/defaultAvatar.png"
+                                pos_hint: {"center_x": .75, "center_y": .89}
+
+                            MDLabel:
+                                pos_hint: {"center_x": .5, "center_y": .75}
+                                text: "Biography"
+                                halign: 'center'
+                                font_style: "H4"
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+
+                            MDLabel:
+                                id: biography
+                                text: "No biography set"
+                                pos_hint: {"center_x": .5, "center_y": .70}
+                                halign: 'center'
+                                elevation: 10
+                                size_hint: .85, .09
+                                font_style: "H5"
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+
+
+
 
                 MDBottomNavigationItem:
                     name: "screen 2"
@@ -137,64 +177,7 @@
                     text: "Profile"
                     icon: 'account'
                     MDScreen:
-                        md_bg_color:51/255,153/255,255/255,1
-                    MDBoxLayout:
-                        orientation:'vertical'
-                        MDBoxLayout:
-                            size_hint_y:.15
-                            padding:dp(25)
-                            MDBoxLayout:
-                                orientation:"vertical"
-                                MDLabel:
-                                    text:"Fit Chat"
-                                    font_style:"H4"
-                                    text_color:'white'
-                                MDBoxLayout:
-                                    adaptive_size:True
-                                    spacing:dp(10)
-                                    MDLabel:
-                                        text:"Profile Page"
-                                        text_size:None,None
-                                        adaptive_width:True
-                                    MDIcon:
-                                        icon:'star'
 
-                            MDIconButton:
-                                icon:""
-                        MDGridLayout:
-                            size_hint_y:.60
-                            cols:2
-                            padding:[dp(15),dp(15),dp(15),dp(35)]
-                            spacing:dp(15)
-
-                            ElementCard:
-                                icon: ''
-                                text:"Profile Picture"
-                                subtext:""
-                                items_count:""
-                                image:'/Users/crimzon/Downloads/stockAvatar.jpeg'
-
-                            ElementCard:
-                                id: picture
-                                image:""
-                                text:"Name"
-                                subtext:""
-                                items_count:""
-
-                            ElementCard:
-                                id: biography
-                                MDLabel:
-                                    halign: "center"
-                                    valign: "top"
-                                    text: "Biography"
-                                    font_style: 'H5'
-                                    valign: 'top'
-
-                            ElementCard:
-                                image:""
-                                text:""
-                                items_count:"Interests"
-                                subtext:""
 
 <ElementCard@MDCard>:
     md_bg_color:102/255,178/255,255/255, 1
