@@ -1,0 +1,25 @@
+MDScreen:
+    MDLabel:
+        id: Chat
+        text: ""
+        pos_hint: {'center_x':0.5, 'center_y': 0.8}
+    MDTextField:
+        id: message
+        hint_text: "Enter message"
+        help_text_mode: "on_focus"
+        pos_hint: {'center_x':0.5, 'center_y': 0.13}
+        size_hint_x: None
+        width: 300
+        mode: "rectangle"
+    MDRectangleFlatButton:
+        text: 'Send message'
+        pos_hint: {'center_x':0.5, 'center_y': 0.05}
+        on_press: app.send_data()
+        size_hint: .3,.05
+        background_color: 51/255,153/255,255/255,
+    MDRectangleFlatButton:
+        text: 'Show Chat History'
+        pos_hint: {'center_x':0.5, 'center_y': 0.95}
+        on_press: app.get_hist()
+        size_hint: .3,.05
+        background_color: 51/255,153/255,255/255,
