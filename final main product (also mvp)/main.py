@@ -141,7 +141,9 @@ class MyApp(MDApp):
         self.root.ids.Chat.text = newMessages
 
     def send_data(self):
-        data = {'Message': ''}
+        doc_ref = firestore.collection("user_login").document(email)
+        data = {'Message': '',
+                "Email": str(doc_ref.id)}
         message = self.root.ids.message.text
         data['Message'] = message
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
