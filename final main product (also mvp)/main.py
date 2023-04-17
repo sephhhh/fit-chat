@@ -31,21 +31,15 @@ class MyApp(MDApp):
         Builder.load_file('main.kv')
         return MainScreenManager()
 
-
-    cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
-    firebase_admin.initialize_app(cred)
-
-    global firestore
-    firestore = firestore.client()
-
     def initializeProfile(self): #function to initialize profile after successful login
-        name = y["name"]
+        accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
+        name = accInfo[accountKey]['name']
         self.root.ids.name.text = name
 
-        bioText = y["bio"]
+        bioText = accInfo[accountKey]["bio"]
         self.root.ids.biography.text = bioText
 
-        profile = y['profilePicture']
+        profile = accInfo[accountKey]['profilePicture']
         self.root.ids.profile_picture.source = profile
 
         pass
@@ -55,47 +49,51 @@ class MyApp(MDApp):
         password = self.root.ids.password.text
         print(email)
         try:  # get database data
-            doc_ref = firestore.collection("user_login").document(email)
-            doc = doc_ref.get()
-            global y
-            y = json.loads(json.dumps(doc.to_dict()))
-            print(y["password"])
-            if str(doc_ref.id) == email and (password == y["password"]):
-                print("Login Successful")
-                self.root.ids.login_message.text = "Successful Login"
-                self.root.current = "homepage"
-                # initialize profile information function
-                self.initializeProfile()
-            else:
-                print("Invalid Password")
-                self.root.ids.login_message.text = "Invalid Password"
+            accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
+            for loginInfo in accInfo.keys():
+                if accInfo[loginInfo]['email'] == email:
+                    if accInfo[loginInfo]['password'] == password:
+                        print("Login Successful")
+                        self.root.ids.login_message.text = "Successful Login"
+                        self.root.current = "homepage"
+                        # initialize profile information function
+                        global accountKey
+                        accountKey = loginInfo
+                        self.initializeProfile()
+
+                else:
+                    print("Invalid Password")
+                    self.root.ids.login_message.text = "Invalid Password"
         except:
             print(email)
             print(password)
-            doc_ref = firestore.collection("user_login").document(email)
-            doc_ref.set({
+
+            data = {
                 'email': email,
                 'password': password,
                 'profilePicture': "fitChatAvatars/defaultAvatar.png",
                 'bio': '"No Biography Written"',
                 'name': "No Name Set",
-            })
+            }
+            firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
             self.root.ids.login_message.text = "Account Created"
-            #self.initializeProfile()
 
     def change_data(self):
         email = self.root.ids.email.text
         password = self.root.ids.password.text
         change_bio = self.root.ids.change_bio.text
         name = self.root.ids.change_name.text
-        doc_ref = firestore.collection("user_login").document(email)
-        doc_ref.set({
+
+        accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
+
+        data = {
             'email': email,
             'password': password,
-            'profilePicture': y['profilePicture'],
+            'profilePicture': accInfo[accountKey]['profilePicture'],
             'bio': change_bio,
             'name': name,
-        })
+        }
+        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
         self.root.current = 'login'
 
     def change_avatar(self):
@@ -116,27 +114,29 @@ class MyApp(MDApp):
         bio = self.root.ids.biography.text
         name = self.root.ids.name.text
         profilePicture = "fitChatAvatars/" + image
-        doc_ref = firestore.collection("user_login").document(email)
-        doc_ref.set({
+
+        data = {
             'email': email,
             'password': password,
             'profilePicture': profilePicture,
             'bio': bio,
             'name': name,
-        })
-
+        }
+        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
         #return back
         self.root.ids.change_text.text = "Avatar Successfully Changed"
         self.root.current = 'homepage'
 
     global firebase
-    firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', None)
+    firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
+    global accountKey
 
     def get_hist(self):
+        email = self.root.ids.email.text
         messages = firebase.get('/Chat', "")
         newMessages = ""
         for i in messages.keys():
-            newMessages = newMessages + '\nYou said: ' + (messages[i]["Message"])
+            newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: ' + (messages[i]["Message"])
         self.root.ids.Chat.text = newMessages
 
     def send_data(self):
