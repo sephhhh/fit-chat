@@ -44,6 +44,9 @@ class MyApp(MDApp):
 
         pass
 
+    def loginScreen(self):
+        self.root.current = "createAccount"
+
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
         password = self.root.ids.password.text
@@ -77,6 +80,21 @@ class MyApp(MDApp):
             }
             firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
             self.root.ids.login_message.text = "Account Created"
+
+    def createAccount(self):
+        email = self.root.ids.newEmail.text
+        password = self.root.ids.newPassword.text
+        newBio = self.root.ids.newBio.text
+        name = self.root.ids.newName.text
+        data = {
+            'email': email,
+            'password': password,
+            'profilePicture': 'fitChatAvatars/defaultAvatar.png',
+            'bio': newBio,
+            'name': name,
+        }
+        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
+
 
     def change_data(self):
         email = self.root.ids.email.text
