@@ -1,0 +1,26 @@
+# Define the list of users to be matched
+users = [
+    {}
+]
+
+# Define the user to be matched with
+user_to_match = {}
+
+#Score Calculator
+for user in users:
+    #Interests score
+    common_interests = set(user_to_match["interests"]).intersection(set(user["interests"]))
+    interests_score = len(common_interests) / len(user_to_match["interests"])
+
+    #Overall score
+    user["score"] = age_score + interests_score
+
+# This will sort the list of users by score
+users.sort(key=lambda x: x["score"], reverse=True)
+
+print("Top 3 matches:")
+for i in range(3):
+    if i >= len(users):
+        break
+    user = users[i]
+    print(f"{user['name']}: {user['score']}")
