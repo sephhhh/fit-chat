@@ -154,8 +154,6 @@ class MyApp(MDApp):
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
         self.root.ids.Chat.text += "\n" + email + ' said: ' + message
 
-    cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
-    firebase_admin.initialize_app(cred)
     checks = []
 
     def check(self, instance, value, sport):
