@@ -46,11 +46,10 @@ class fscreen(Widget):
 		self.h = self.height*0.9
 		users = firebase.get('/Users', "")
 		for user in users.keys():
-			if user != accInfo[accountKey]:
-				self.h = self.h - self.height*0.1
-				self.btn = Button(text='User: '+str(users[user]['name']), size=(self.width*0.4, self.height*0.05), pos=(self.width*0.3, self.h), on_press = self.press)
-				self.list_of_btns.append(self.btn)
-				self.add_widget(self.btn)
+			self.h = self.h - self.height*0.075
+			self.btn = Button(text='User: '+str(users[user]['name'] + '\nEmail: ' +users[user]['email'] + '\nInterests: ' + users[user]['sports']), size=(self.width*1, self.height*0.075), pos=(self.width*0, self.h), on_press = self.press)
+			self.list_of_btns.append(self.btn)
+			self.add_widget(self.btn)
 	
 
 	def press(self, instance):
