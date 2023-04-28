@@ -1,0 +1,351 @@
+<MainScreenManager>:
+    MDScreen:
+        name: "login"
+        MDFloatLayout:
+            md_bg_color:51/255,153/255,255/255,1
+            MDCard:
+                size_hint: 0.8, 0.6
+                size: 600, 800
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                elevation: 10
+                padding: 25
+                spacing: 25
+                orientation: 'vertical'
+
+                MDLabel
+                    text: "Fit Chat"
+                    font_size: 72
+                    halign: 'center'
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    padding_y: 25
+
+                MDTextField:
+                    id: email
+                    hint_text: "Enter email"
+                    help_text_mode: "on_focus"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                    size_hint_x: None
+                    icon_right: "account"
+                    width: 400
+
+                MDTextField:
+                    id: password
+                    hint_text: "Enter password"
+                    icon_right: "eye-off"
+                    multiline: True
+                    help_text_mode: "on_focus"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                    size_hint_x: None
+                    password: True
+                    width: 400
+
+                MDRectangleFlatButton:
+                    text: 'Submit Login Information'
+                    pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                    on_press: app.get_data()
+                    width: 200
+                    height: 100
+                    background_color: 51/255,153/255,255/255,1
+
+                MDRectangleFlatButton:
+                    text: 'Create New Account'
+                    pos_hint: {'center_x':0.5, 'center_y': 0.25}
+                    on_press: app.loginScreen()
+                    width: 200
+                    height: 100
+                    background_color: 51/255,153/255,255/255,1
+
+                MDLabel:
+                    id: login_message
+                    text:
+                    font: 20
+                    halign: "center"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.3}
+
+
+    MDScreen:
+        name: "homepage"
+        BoxLayout:
+            orientation: 'vertical'
+
+            MDBottomAppBar:
+                title: "Bottom Navbar"
+            MDBottomNavigation:
+                #colors
+
+                MDBottomNavigationItem:
+                    name: "screen 1"
+                    text: "Profile"
+                    icon: 'account'
+                    MDScreen:
+                        name: "profile"
+                        MDBoxLayout:
+                            md_bg_color:51/255,153/255,255/255,1
+                            orientation: 'vertical'
+                            spacing: '5dp'
+                            padding: '5dp'
+
+                            MDCard:
+                                size_hint: 1, .1
+                                md_bg_color:51/255,153/255,255/255,1
+
+
+                            MDCard:
+                                spacing: '2dp'
+                                size_hint: 1, .50
+                                md_bg_color: 0, 0.5, 0.8, 1
+                                MDCard:
+                                    size_hint: .55, 1
+                                    MDFloatLayout:
+                                        orientation: 'vertical'
+                                        md_bg_color: 1, 1, 1, 1
+                                        MDLabel:
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.75}
+                                            text: "Fit Chat"
+                                            halign: 'center'
+                                            font_style: "H3"
+                                        MDLabel:
+                                            id: name
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.60}
+                                            halign: 'center'
+                                            text:"No Name Set"
+                                            font_style: "H5"
+                                MDCard:
+                                    size_hint: .45, 1
+                                    md_bg_color: 1, 1, 1, 1
+                                    height: 25
+                                    Image:
+                                        id: profile_picture
+                                        source: "fitChatAvatars/defaultAvatar.png"
+
+                            MDCard:
+                                orientation: 'vertical'
+                                md_bg_color: 1, 1, 1, 1
+                                MDLabel:
+                                    size_hint: 1, .25
+                                    pos_hint: {"center_x": .5, "center_y": .55}
+                                    text: "Biography"
+                                    halign: 'center'
+                                    font_style: "H4"
+                                    theme_text_color: "Custom"
+                                    text_color: 63/255, 63/255, 191/255, 1
+                                MDLabel:
+                                    id: biography
+                                    size_hint: 1, .75
+                                    pos_hint: {"center_x": .5, "center_y": .85}
+                                    text: ''
+                                    font_style: "H5"
+                                    theme_text_color: "Custom"
+                                    text_color: 63/255, 63/255, 191/255, 1
+
+
+                MDBottomNavigationItem:
+                    name: "screen 2"
+                    text: "Chat Room"
+                    icon: 'account-multiple-plus'
+                    MDScreen:
+                        MDLabel:
+                            id: Chat
+                            text: ""
+                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                        MDTextField:
+                            id: message
+                            hint_text: "Enter message"
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.13}
+                            size_hint_x: None
+                            width: 300
+                            mode: "rectangle"
+                        MDRectangleFlatButton:
+                            text: 'Send message'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.05}
+                            on_press: app.send_data()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,
+                        MDRectangleFlatButton:
+                            text: 'Show Chat History'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.95}
+                            on_press: app.get_hist()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,
+
+                MDBottomNavigationItem:
+                    name: "screen 3"
+                    text: "Settings"
+                    icon: 'account-cog'
+                    MDScreen:
+                        MDTextField:
+                            id: change_name
+                            hint_text: "Enter Full Name"
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                            size_hint_x: None
+                            width: 500
+
+                        MDTextField:
+                            id: change_bio
+                            hint_text: "Describe Yourself in a Biography"
+                            multiline: True
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                            size_hint_x: None
+                            width: 500
+
+                        MDRectangleFlatButton:
+                            text: 'Change Avatar'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            on_press: app.change_avatar()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+
+                        MDLabel:
+                            id: change_text
+                            text: ''
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            size_hint: .3,.05
+
+                        MDRectangleFlatButton:
+                            text: 'Submit Profile'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+                            on_press: app.change_data()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+                MDBottomNavigationItem:
+                    name: "screen 4 "
+                    text: "Interests"
+                    icon: 'account-cog'
+                    MDScreen:
+                        MDLabel:
+                            text: "Select roles that intersts you and press submit"
+                            pos_hint: {"center_x": .55, "center_y": .93}
+                            theme_text_color: "Custom"
+                            text_color: 63/255, 63/255, 191/255, 1
+                            font_size:32
+                        FloatLayout:
+                            MDLabel:
+                                text: "Track"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .8}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .8}
+                                on_active: app.check(self, self.active, "Track")
+                            MDLabel:
+                                text: "Soccer"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .7}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .7}
+                                on_active: app.check(self, self.active, "Soccer")
+                            MDLabel:
+                                text: "Basketball"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .6}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .6}
+                                on_active: app.check(self, self.active, "Basketball")
+                        MDRectangleFlatButton:
+                            text: 'Submit Sport(s)'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+                            on_press: app.changeSports()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+                        MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            text: "You selected: "
+                        MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            id: sports_label
+                            text: ""
+    MDScreen:
+        name: "change_avatar"
+        ScrollView:
+            GridLayout:
+                cols: 3
+                id: avatar_grid
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: "100dp"
+                row_force_default: True
+                spacing: 20, 20
+                padding: 20, 20
+
+    MDScreen:
+        name: 'createAccount'
+        MDTextField:
+            id: newName
+            hint_text: "Enter Full Name"
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.9}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newEmail
+            hint_text: "Enter Email"
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.8}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newPassword
+            hint_text: "Enter Password"
+            password: True
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newBio
+            hint_text: "Describe Yourself in a Biography"
+            multiline: True
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.55}
+            size_hint: None, None
+            text_size: root.width, None
+            width: 500
+
+        MDRectangleFlatButton:
+            text: 'Avatar'
+            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+            on_press: app.change_avatar()
+            size_hint: .3,.05
+            background_color: 51/255,153/255,255/255,1
+
+        MDLabel:
+            id: change_text
+            text: ''
+            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+            size_hint: .3,.05
+
+        MDRectangleFlatButton:
+            text: 'Submit Account Information'
+            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+            on_press: app.createAccount()
+            size_hint: .3,.05
+            background_color: 51/255,153/255,255/255,1
+
+
+
+
+
+
+
+
