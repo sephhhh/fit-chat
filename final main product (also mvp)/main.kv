@@ -1,7 +1,7 @@
 <MainScreenManager>:
     MDScreen:
         name: "login"
-        MDBoxLayout:
+        MDFloatLayout:
             md_bg_color:51/255,153/255,255/255,1
             MDCard:
                 size_hint: 0.8, 0.6
@@ -193,6 +193,13 @@
                             width: 500
 
                         MDRectangleFlatButton:
+                            text: 'Take a Picture'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            on_press: app.cameraScreen()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+
+                        MDRectangleFlatButton:
                             text: 'Change Avatar'
                             pos_hint: {'center_x':0.5, 'center_y': 0.3}
                             on_press: app.change_avatar()
@@ -262,10 +269,14 @@
                         MDRectangleFlatButton:
                             text: 'Submit Sport(s)'
                             pos_hint: {'center_x':0.5, 'center_y': 0.1}
-                            on_press: app.change_data()
+                            on_press: app.changeSports()
                             size_hint: .3,.05
                             background_color: 51/255,153/255,255/255,1
                         MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            text: "You selected: "
+                        MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
                             id: sports_label
                             text: ""
     MDScreen:
@@ -338,10 +349,27 @@
             size_hint: .3,.05
             background_color: 51/255,153/255,255/255,1
 
-
-
-
-
-
+    MDScreen:
+        name: 'camera'
+        orientation: 'vertical'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDCard:
+                size_hint: 1, .1
+                md_bg_color: 0, 1, 1, 1
+            Camera:
+                id: camera
+                resolution: (720, 720)
+                play: False
+            ToggleButton:
+                text: 'Play'
+                on_press: camera.play = not camera.play
+                size_hint_y: None
+                height: '110dp'
+            Button:
+                text: 'Capture'
+                size_hint_y: None
+                height: '110dp'
+                on_press: app.capture()
 
 

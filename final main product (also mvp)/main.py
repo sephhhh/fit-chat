@@ -9,6 +9,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import json
 from os import walk
+import time
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
 from functools import partial
@@ -30,6 +31,20 @@ class MyApp(MDApp):
         Builder.load_file('main.kv')
         return MainScreenManager()
 
+    def capture(self):
+        '''
+        Function to capture the images and give them the names
+        according to their captured time and date.
+        '''
+        camera = self.root.ids.camera
+        timestr = time.strftime("%Y%m%d_%H%M%S")
+        camera.export_to_png("fitChatAvatars/IMG_{}.png".format(timestr))
+        print("Captured")
+        self.root.current = 'homepage'
+
+    def cameraScreen(self):
+        self.root.current = 'camera'
+
     def initializeProfile(self):  # function to initialize profile after successful login
         accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
         name = accInfo[accountKey]['name']
@@ -40,6 +55,9 @@ class MyApp(MDApp):
 
         profile = accInfo[accountKey]['profilePicture']
         self.root.ids.profile_picture.source = profile
+
+        sport = accInfo[accountKey]['sportSelection']
+        self.root.ids.sport_selectcion.source = sport
 
     def loginScreen(self):
         self.root.current = "createAccount"
@@ -96,6 +114,14 @@ class MyApp(MDApp):
             'profilePicture': accInfo[accountKey]['profilePicture'],
             'bio': change_bio,
             'name': name,
+        }
+        firebase.patch(accountLink, data)
+        self.root.current = 'login'
+
+    def changeSports(self):
+        sport = self.root.ids.sports_label.text
+        accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+        data = {
             'sports': sport
         }
         firebase.patch(accountLink, data)
@@ -154,6 +180,8 @@ class MyApp(MDApp):
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
         self.root.ids.Chat.text += "\n" + email + ' said: ' + message
 
+    cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
+    firebase_admin.initialize_app(cred)
     checks = []
 
     def check(self, instance, value, sport):
@@ -162,7 +190,7 @@ class MyApp(MDApp):
             sports = ""
             for i in MyApp.checks:
                 sports = f"{sports} {i}"
-            self.root.ids.sports_label.text = f"You Selected:{sports}"
+            self.root.ids.sports_label.text = f"{sports}"
         else:
             MyApp.checks.remove(sport)
             sports = ""
