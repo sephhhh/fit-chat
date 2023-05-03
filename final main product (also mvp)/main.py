@@ -40,6 +40,7 @@ class MyApp(MDApp):
         timestr = time.strftime("%Y%m%d_%H%M%S")
         camera.export_to_png("fitChatAvatars/IMG_{}.png".format(timestr))
         print("Captured")
+        self.root.ids.camera.play = not camera.play
         self.root.current = 'homepage'
 
     def cameraScreen(self):
