@@ -282,28 +282,30 @@
                 MDBottomNavigationItem:
                     name: "screen 5"
                     text: "Matching"
-                    MDScreen:
-                        MDRectangleFlatButton:
-		                    text: 'Show Users'
-		                    size: root.width*1, root.height*0.05
-		                    pos: root.width*0, root.height*0.9
-		                    on_press: root.create()
-	                    MDTextField:
-                            id: message
-                            hint_text: "Friend Email"
-                            help_text_mode: "on_focus"
-                            pos_size: 1, 1
-		                    pos: root.width*0, root.height*0.3
-                            mode: "rectangle"
-	                    	width: 300
-                	    	halign: 'center'
-	                    	valign: 'center'
-                        MDRectangleFlatButton:
-                            text: 'Add Friend'
-                            pos_size: 5, 1
-	                        pos: root.width*0, root.height*0.2
-                            background_color: 51/255,153/255,255/255,
-
+                    icon: 'account-cog'
+                    BoxLayout:
+                        id: Matching
+                        MDScreen:
+                            MDRectangleFlatButton:
+		                        text: 'Show Users'
+    		                    pos_hint: {'center_x':0.5, 'center_y': 0.2}
+	    	                    pos: root.width*0, root.height*0.9
+		                        on_press: app.create()
+	                        MDTextField:
+                                id: message
+                                hint_text: "Friend Email"
+                                help_text_mode: "on_focus"
+                                pos_size: 1, 1
+	    	                    pos: root.width*0, root.height*0.3
+                                mode: "rectangle"
+	                        	width: 300
+                	        	halign: 'center'
+	                        	valign: 'center'
+                            MDRectangleFlatButton:
+                                text: 'Add Friend'
+                                pos_size: 5, 1
+	                            pos: root.width*0, root.height*0.2
+                                background_color: 51/255,153/255,255/255,
     MDScreen:
         name: "change_avatar"
         ScrollView:
@@ -373,28 +375,4 @@
             on_press: app.createAccount()
             size_hint: .3,.05
             background_color: 51/255,153/255,255/255,1
-
-    MDScreen:
-        name: 'camera'
-        orientation: 'vertical'
-        MDBoxLayout:
-            orientation: 'vertical'
-            MDCard:
-                size_hint: 1, .1
-                md_bg_color: 0, 1, 1, 1
-            Camera:
-                id: camera
-                resolution: (720, 720)
-                play: False
-            ToggleButton:
-                text: 'Play'
-                on_press: camera.play = not camera.play
-                size_hint_y: None
-                height: '110dp'
-            Button:
-                text: 'Capture'
-                size_hint_y: None
-                height: '110dp'
-                on_press: app.capture()
-            
-                    
+    
