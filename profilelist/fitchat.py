@@ -212,6 +212,7 @@ class MyApp(MDApp):
 
     def create(self):
         profilelist = self.root.ids.profileListing
+        profilelist.clear_widgets()
         #avatar_grid = self.root.ids.avatar_grid
         users = firebase.get('/Users', '')
         for user in users.keys():
