@@ -28,8 +28,23 @@ class MainScreenManager(ScreenManager):
 class MyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Light'
-        Builder.load_file('fitchat.kv')
+        Builder.load_file('main.kv')
         return MainScreenManager()
+
+    def capture(self):
+        '''
+        Function to capture the images and give them the names
+        according to their captured time and date.
+        '''
+        camera = self.root.ids.camera
+        timestr = time.strftime("%Y%m%d_%H%M%S")
+        camera.export_to_png("fitChatAvatars/IMG_{}.png".format(timestr))
+        print("Captured")
+        self.root.ids.camera.play = not camera.play
+        self.root.current = 'homepage'
+
+    def cameraScreen(self):
+        self.root.current = 'camera'
 
     def initializeProfile(self):  # function to initialize profile after successful login
         accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
@@ -47,6 +62,9 @@ class MyApp(MDApp):
 
     def loginScreen(self):
         self.root.current = "createAccount"
+
+    def profileListScreen(self):
+        self.root.current = 'profileList'
 
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
@@ -81,6 +99,9 @@ class MyApp(MDApp):
             'profilePicture': 'fitChatAvatars/defaultAvatar.png',
             'bio': bio,
             'name': name,
+            'sports': "",
+            'requests': '',
+            'friends': '',
         }
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
         self.root.current = 'login'
@@ -189,26 +210,22 @@ class MyApp(MDApp):
 
         self.list_of_btns = []
 
-
     def create(self):
-        self.root.current = 'Matching'
-        Matching = self.root.ids.matching
-        users = firebase.get('/Users', "")
-        for user in users.keys(): 
-            img = Image(source =users[user]['profilePicture'])
-            btn = Button(text='User: '+str(users[user]['name'] + '\nEmail: ' +users[user]['email'] + '\nInterests: ' + users[user]['sports']),on_press = self.press)
-            Matching.list_of_btns.append(btn)
-            Matching.add_widget(btn)
-            Matching.add_widget(img)
-	
+        profilelist = self.root.ids.profileListing
+        #avatar_grid = self.root.ids.avatar_grid
+        users = firebase.get('/Users', '')
+        for user in users.keys():
+            img = Image(source = users[user]['profilePicture']) # pos_hint = {'x':.8,'y': 1})
+            btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
+            profilelist.add_widget(img)
+            profilelist.add_widget(btn)
+
     def add(self):
         data = {'': ''}
-        
 
     def press(self, instance):
         pass
 
-    
 
 if __name__ == '__main__':
     MyApp().run()

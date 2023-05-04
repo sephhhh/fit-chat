@@ -281,31 +281,39 @@
                             text: ""
                 MDBottomNavigationItem:
                     name: "screen 5"
-                    text: "Matching"
+                    id: friendpage
+                    text: "Friends"
                     icon: 'account-cog'
-                    BoxLayout:
-                        id: Matching
-                        MDScreen:
+                    MDScreen:
+                        MDBoxLayout:
+                            orientation: 'vertical'
                             MDRectangleFlatButton:
-		                        text: 'Show Users'
-    		                    pos_hint: {'center_x':0.5, 'center_y': 0.2}
-	    	                    pos: root.width*0, root.height*0.9
+                                size_hint: 1, .1
+		                        text: 'Show Friends'
 		                        on_press: app.create()
+		                    MDLabel:
+		                        size_hint: 1, .6
 	                        MDTextField:
                                 id: message
                                 hint_text: "Friend Email"
                                 help_text_mode: "on_focus"
-                                pos_size: 1, 1
-	    	                    pos: root.width*0, root.height*0.3
+                                size_hint: 1, .1
                                 mode: "rectangle"
 	                        	width: 300
                 	        	halign: 'center'
 	                        	valign: 'center'
                             MDRectangleFlatButton:
                                 text: 'Add Friend'
-                                pos_size: 5, 1
+                                size_hint: 1, .1
 	                            pos: root.width*0, root.height*0.2
                                 background_color: 51/255,153/255,255/255,
+                            MDBoxLayout:
+                                size_hint: 1, .08
+                                orientation: 'horizontal'
+                                MDRectangleFlatButton:
+                                    on_press: app.profileListScreen()
+                                    text: "placeholder 1"
+
     MDScreen:
         name: "change_avatar"
         ScrollView:
@@ -375,4 +383,34 @@
             on_press: app.createAccount()
             size_hint: .3,.05
             background_color: 51/255,153/255,255/255,1
-    
+
+    MDScreen:
+        name: 'profileList'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                size_hint: 1, .1
+                text: 'Show Users'
+                on_press: app.create()
+
+            ScrollView:
+                size_hint: 1, .8
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    id: profileListing
+                    height: self.minimum_height
+
+            MDTextField:
+                id: message
+                hint_text: "Friend Email"
+                help_text_mode: "on_focus"
+                size_hint: 1, .1
+                mode: "rectangle"
+                width: 300
+                halign: 'center'
+                valign: 'center'
+            MDRectangleFlatButton:
+                text: 'Add Friend'
+                size_hint: 1, .1
+                pos: root.width*0, root.height*0.2
+                background_color: 51/255,153/255,255/255,
