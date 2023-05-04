@@ -1,229 +1,400 @@
-from kivy.lang import Builder
-from kivy.app import App
-from kivymd.app import MDApp
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.core.window import Window
-from firebase import firebase
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-import json
-from os import walk
-import time
-from kivy.uix.button import ButtonBehavior
-from kivy.uix.image import Image
-from functools import partial
+<MainScreenManager>:
+    MDScreen:
+        name: "login"
+        MDFloatLayout:
+            md_bg_color:51/255,153/255,255/255,1
+            MDCard:
+                size_hint: 0.8, 0.6
+                size: 600, 800
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                elevation: 10
+                padding: 25
+                spacing: 25
+                orientation: 'vertical'
 
-Window.size = (350, 700)
+                MDLabel
+                    text: "Fit Chat"
+                    font_size: 72
+                    halign: 'center'
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    padding_y: 25
 
+                MDTextField:
+                    id: email
+                    hint_text: "Enter email"
+                    help_text_mode: "on_focus"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                    size_hint_x: None
+                    icon_right: "account"
+                    width: 400
 
-class ImageButton(ButtonBehavior, Image):
-    pass
+                MDTextField:
+                    id: password
+                    hint_text: "Enter password"
+                    icon_right: "eye-off"
+                    multiline: True
+                    help_text_mode: "on_focus"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                    size_hint_x: None
+                    password: True
+                    width: 400
 
+                MDRectangleFlatButton:
+                    text: 'Submit Login Information'
+                    pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                    on_press: app.get_data()
+                    width: 200
+                    height: 100
+                    background_color: 51/255,153/255,255/255,1
 
-class MainScreenManager(ScreenManager):
-    pass
+                MDRectangleFlatButton:
+                    text: 'Create New Account'
+                    pos_hint: {'center_x':0.5, 'center_y': 0.25}
+                    on_press: app.loginScreen()
+                    width: 200
+                    height: 100
+                    background_color: 51/255,153/255,255/255,1
 
-
-class MyApp(MDApp):
-    def build(self):
-        self.theme_cls.theme_style = 'Light'
-        Builder.load_file('main.kv')
-        return MainScreenManager()
-
-    def capture(self):
-        '''
-        Function to capture the images and give them the names
-        according to their captured time and date.
-        '''
-        camera = self.root.ids.camera
-        timestr = time.strftime("%Y%m%d_%H%M%S")
-        camera.export_to_png("fitChatAvatars/IMG_{}.png".format(timestr))
-        print("Captured")
-        self.root.ids.camera.play = not camera.play
-        self.root.current = 'homepage'
-
-    def cameraScreen(self):
-        self.root.current = 'camera'
-
-    def initializeProfile(self):  # function to initialize profile after successful login
-        accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
-        name = accInfo[accountKey]['name']
-        self.root.ids.name.text = name
-
-        bioText = accInfo[accountKey]["bio"]
-        self.root.ids.biography.text = bioText
-
-        profile = accInfo[accountKey]['profilePicture']
-        self.root.ids.profile_picture.source = profile
-
-        sport = accInfo[accountKey]['sportSelection']
-        self.root.ids.sport_selectcion.source = sport
-
-    def loginScreen(self):
-        self.root.current = "createAccount"
-
-    def get_data(self):  # function for submit button
-        email = self.root.ids.email.text
-        password = self.root.ids.password.text
-        print(email)
-        try:  # get database data
-            accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
-            for loginInfo in accInfo.keys():
-                if accInfo[loginInfo]['email'] == email:
-                    if accInfo[loginInfo]['password'] == password:
-                        print("Login Successful")
-                        self.root.ids.login_message.text = "Successful Login"
-                        self.root.current = "homepage"
-                        # initialize profile information function
-                        global accountKey
-                        accountKey = loginInfo
-                        self.initializeProfile()
-                else:
-                    print("Invalid Password")
-                    self.root.ids.login_message.text = "Invalid Password"
-        except:
-            pass
-
-    def createAccount(self):
-        email = self.root.ids.newEmail.text
-        password = self.root.ids.newPassword.text
-        bio = self.root.ids.newBio.text
-        name = self.root.ids.newName.text
-        data = {
-            'email': email,
-            'password': password,
-            'profilePicture': 'fitChatAvatars/defaultAvatar.png',
-            'bio': bio,
-            'name': name,
-        }
-        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
-        self.root.current = 'login'
-
-    def change_data(self):
-        email = self.root.ids.email.text
-        password = self.root.ids.password.text
-        change_bio = self.root.ids.change_bio.text
-        name = self.root.ids.change_name.text
-        sport = self.root.ids.sports_label.text
-        accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-        accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
-
-        data = {
-            'email': email,
-            'password': password,
-            'profilePicture': accInfo[accountKey]['profilePicture'],
-            'bio': change_bio,
-            'name': name,
-        }
-        firebase.patch(accountLink, data)
-        self.root.current = 'login'
-
-    def changeSports(self):
-        sport = self.root.ids.sports_label.text
-        accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-        data = {
-            'sports': sport
-        }
-        firebase.patch(accountLink, data)
-        self.root.current = 'login'
-
-    def change_avatar(self):
-        self.root.current = 'change_avatar'
-        avatar_grid = self.root.ids.avatar_grid
-        for root_dir, folders, files in walk("fitChatAvatars"):
-            for f in files:
-                if f != '.DS_Store':  # for mac folders
-                    img = ImageButton(source="fitChatAvatars/" + f, on_release=partial(self.change_avatar_pic, f))
-                    avatar_grid.add_widget(img)
-
-    def change_avatar_pic(self, image, widget_id):
-        self.root.ids.profile_picture.source = "fitChatAvatars/" + image
-
-        # firebase
-        email = self.root.ids.email.text
-        password = self.root.ids.password.text
-        bio = self.root.ids.biography.text
-        name = self.root.ids.name.text
-        profilePicture = "fitChatAvatars/" + image
-
-        data = {
-            'email': email,
-            'password': password,
-            'profilePicture': profilePicture,
-            'bio': bio,
-            'name': name,
-        }
-
-        accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-        firebase.patch(accountLink, data)
-        # return back
-        self.root.ids.change_text.text = "Avatar Successfully Changed"
-        self.root.current = 'homepage'
-
-    global firebase
-    firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
-    global accountKey
-
-    def get_hist(self):
-        messages = firebase.get('/Chat', "")
-        newMessages = ""
-        for i in messages.keys():
-            newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: ' + (messages[i]["Message"])
-        self.root.ids.Chat.text = newMessages
-
-    def send_data(self):
-        email = self.root.ids.email.text
-        data = {'Message': '',
-                'Email': email}
-        message = self.root.ids.message.text
-        data['Message'] = message
-        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
-        self.root.ids.Chat.text += "\n" + email + ' said: ' + message
-
-    cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
-    firebase_admin.initialize_app(cred)
-    checks = []
-
-    def check(self, instance, value, sport):
-        if value == True:
-            MyApp.checks.append(sport)
-            sports = ""
-            for i in MyApp.checks:
-                sports = f"{sports} {i}"
-            self.root.ids.sports_label.text = f"{sports}"
-        else:
-            MyApp.checks.remove(sport)
-            sports = ""
-            for i in MyApp.checks:
-                sports = f"{sports} {i}"
-            self.root.ids.sports_label.text = f"{sports}"
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.list_of_btns = []
+                MDLabel:
+                    id: login_message
+                    text:
+                    font: 20
+                    halign: "center"
+                    pos_hint: {'center_x':0.5, 'center_y': 0.3}
 
 
-    def create(self):
-        self.h = self.height*0.9
-        users = firebase.get('/Users', "")
-        for user in users.keys(): 
-            self.h = self.h - self.height*0.08
-            self.img = Image(source =users[user]['profilePicture'],size=(self.width*0.15, self.height*0.08), pos=(self.width*0, self.h))
-            self.btn = Button(text='User: '+str(users[user]['name'] + '\nEmail: ' +users[user]['email'] + '\nInterests: ' + users[user]['sports']), size=(self.width*1, self.height*0.08), pos=(self.width*0.15, self.h), halign = 'left',on_press = self.press)
-            self.list_of_btns.append(self.btn)
-            self.add_widget(self.btn)
-            self.add_widget(self.img)
-	
-    def add(self):
-        data = {'': ''}
-        
+    MDScreen:
+        name: "homepage"
+        BoxLayout:
+            orientation: 'vertical'
 
-    def press(self, instance):
-        pass
+            MDBottomAppBar:
+                title: "Bottom Navbar"
+            MDBottomNavigation:
+                #colors
 
-    
+                MDBottomNavigationItem:
+                    name: "screen 1"
+                    text: "Profile"
+                    icon: 'account'
+                    MDScreen:
+                        name: "profile"
+                        MDBoxLayout:
+                            md_bg_color:51/255,153/255,255/255,1
+                            orientation: 'vertical'
+                            spacing: '5dp'
+                            padding: '5dp'
 
-if __name__ == '__main__':
-    MyApp().run()
+                            MDCard:
+                                size_hint: 1, .1
+                                md_bg_color:51/255,153/255,255/255,1
+
+
+                            MDCard:
+                                spacing: '2dp'
+                                size_hint: 1, .50
+                                md_bg_color: 0, 0.5, 0.8, 1
+                                MDCard:
+                                    size_hint: .55, 1
+                                    MDFloatLayout:
+                                        orientation: 'vertical'
+                                        md_bg_color: 1, 1, 1, 1
+                                        MDLabel:
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.75}
+                                            text: "Fit Chat"
+                                            halign: 'center'
+                                            font_style: "H3"
+                                        MDLabel:
+                                            id: name
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.60}
+                                            halign: 'center'
+                                            text:"No Name Set"
+                                            font_style: "H5"
+                                MDCard:
+                                    size_hint: .45, 1
+                                    md_bg_color: 1, 1, 1, 1
+                                    height: 25
+                                    Image:
+                                        id: profile_picture
+                                        source: "fitChatAvatars/defaultAvatar.png"
+
+                            MDCard:
+                                orientation: 'vertical'
+                                md_bg_color: 1, 1, 1, 1
+                                MDLabel:
+                                    size_hint: 1, .25
+                                    pos_hint: {"center_x": .5, "center_y": .55}
+                                    text: "Biography"
+                                    halign: 'center'
+                                    font_style: "H4"
+                                    theme_text_color: "Custom"
+                                    text_color: 63/255, 63/255, 191/255, 1
+                                MDLabel:
+                                    id: biography
+                                    size_hint: 1, .75
+                                    pos_hint: {"center_x": .5, "center_y": .85}
+                                    text: ''
+                                    font_style: "H5"
+                                    theme_text_color: "Custom"
+                                    text_color: 63/255, 63/255, 191/255, 1
+
+
+                MDBottomNavigationItem:
+                    name: "screen 2"
+                    text: "Chat Room"
+                    icon: 'account-multiple-plus'
+                    MDScreen:
+                        MDLabel:
+                            id: Chat
+                            text: ""
+                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                        MDTextField:
+                            id: message
+                            hint_text: "Enter message"
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.13}
+                            size_hint_x: None
+                            width: 300
+                            mode: "rectangle"
+                        MDRectangleFlatButton:
+                            text: 'Send message'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.05}
+                            on_press: app.send_data()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,
+                        MDRectangleFlatButton:
+                            text: 'Show Chat History'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.95}
+                            on_press: app.get_hist()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,
+
+                MDBottomNavigationItem:
+                    name: "screen 3"
+                    text: "Settings"
+                    icon: 'account-cog'
+                    MDScreen:
+                        MDTextField:
+                            id: change_name
+                            hint_text: "Enter Full Name"
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.9}
+                            size_hint_x: None
+                            width: 500
+
+                        MDTextField:
+                            id: change_bio
+                            hint_text: "Describe Yourself in a Biography"
+                            multiline: True
+                            help_text_mode: "on_focus"
+                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+                            size_hint_x: None
+                            width: 500
+
+                        MDRectangleFlatButton:
+                            text: 'Take a Picture'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            on_press: app.cameraScreen()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+
+                        MDRectangleFlatButton:
+                            text: 'Change Avatar'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            on_press: app.change_avatar()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+
+                        MDLabel:
+                            id: change_text
+                            text: ''
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            size_hint: .3,.05
+
+                        MDRectangleFlatButton:
+                            text: 'Submit Profile'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+                            on_press: app.change_data()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+                MDBottomNavigationItem:
+                    name: "screen 4 "
+                    text: "Interests"
+                    icon: 'account-cog'
+                    MDScreen:
+                        MDLabel:
+                            text: "Select roles that intersts you and press submit"
+                            pos_hint: {"center_x": .55, "center_y": .93}
+                            theme_text_color: "Custom"
+                            text_color: 63/255, 63/255, 191/255, 1
+                            font_size:32
+                        FloatLayout:
+                            MDLabel:
+                                text: "Track"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .8}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .8}
+                                on_active: app.check(self, self.active, "Track")
+                            MDLabel:
+                                text: "Soccer"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .7}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .7}
+                                on_active: app.check(self, self.active, "Soccer")
+                            MDLabel:
+                                text: "Basketball"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .6}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .5, 'center_y': .6}
+                                on_active: app.check(self, self.active, "Basketball")
+                        MDRectangleFlatButton:
+                            text: 'Submit Sport(s)'
+                            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+                            on_press: app.changeSports()
+                            size_hint: .3,.05
+                            background_color: 51/255,153/255,255/255,1
+                        MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+                            text: "You selected: "
+                        MDLabel:
+                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+                            id: sports_label
+                            text: ""
+                 MDBottomNavigationItem:
+                    name: "screen 5"
+                    text: "Matching"
+                    MDScreen:
+                        MDRectangleFlatButton:
+		                    text: 'Show Users'
+		                    size: root.width*1, root.height*0.05
+		                    pos: root.width*0, root.height*0.9
+		                    on_press: root.create()
+	                    MDTextField:
+                            id: message
+                            hint_text: "Friend Email"
+                            help_text_mode: "on_focus"
+                            pos_size: 1, 1
+		                    pos: root.width*0, root.height*0.3
+                            mode: "rectangle"
+	                    	width: 300
+                	    	halign: 'center'
+	                    	valign: 'center'
+                        MDRectangleFlatButton:
+                            text: 'Add Friend'
+                            pos_size: 5, 1
+	                        pos: root.width*0, root.height*0.2
+                            background_color: 51/255,153/255,255/255,
+
+    MDScreen:
+        name: "change_avatar"
+        ScrollView:
+            GridLayout:
+                cols: 3
+                id: avatar_grid
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: "100dp"
+                row_force_default: True
+                spacing: 20, 20
+                padding: 20, 20
+
+    MDScreen:
+        name: 'createAccount'
+        MDTextField:
+            id: newName
+            hint_text: "Enter Full Name"
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.9}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newEmail
+            hint_text: "Enter Email"
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.8}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newPassword
+            hint_text: "Enter Password"
+            password: True
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.7}
+            size_hint_x: None
+            width: 500
+
+        MDTextField:
+            id: newBio
+            hint_text: "Describe Yourself in a Biography"
+            multiline: True
+            help_text_mode: "on_focus"
+            pos_hint: {'center_x':0.5, 'center_y': 0.55}
+            size_hint: None, None
+            text_size: root.width, None
+            width: 500
+
+        MDRectangleFlatButton:
+            text: 'Avatar'
+            pos_hint: {'center_x':0.5, 'center_y': 0.3}
+            on_press: app.change_avatar()
+            size_hint: .3,.05
+            background_color: 51/255,153/255,255/255,1
+
+        MDLabel:
+            id: change_text
+            text: ''
+            pos_hint: {'center_x':0.5, 'center_y': 0.2}
+            size_hint: .3,.05
+
+        MDRectangleFlatButton:
+            text: 'Submit Account Information'
+            pos_hint: {'center_x':0.5, 'center_y': 0.1}
+            on_press: app.createAccount()
+            size_hint: .3,.05
+            background_color: 51/255,153/255,255/255,1
+
+    MDScreen:
+        name: 'camera'
+        orientation: 'vertical'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDCard:
+                size_hint: 1, .1
+                md_bg_color: 0, 1, 1, 1
+            Camera:
+                id: camera
+                resolution: (720, 720)
+                play: False
+            ToggleButton:
+                text: 'Play'
+                on_press: camera.play = not camera.play
+                size_hint_y: None
+                height: '110dp'
+            Button:
+                text: 'Capture'
+                size_hint_y: None
+                height: '110dp'
+                on_press: app.capture()
+            
+                    
