@@ -137,6 +137,7 @@ class MyApp(MDApp):
     def change_avatar(self):
         self.root.current = 'change_avatar'
         avatar_grid = self.root.ids.avatar_grid
+        avatar_grid.clear_widgets()
         for root_dir, folders, files in walk("fitChatAvatars"):
             for f in files:
                 if f != '.DS_Store':  # for mac folders
