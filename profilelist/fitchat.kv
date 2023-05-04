@@ -1,0 +1,23 @@
+<fscreen>
+	MDRectangleFlatButton:
+		text: 'Show Users'
+		size: root.width*1, root.height*0.05
+		pos: root.width*0, root.height*0.9
+		on_press: root.create()
+	MDTextField:
+        id: friendrequest
+        hint_text: "Friend Email"
+        help_text_mode: "on_focus"
+        pos_size: 1, 1
+		pos: root.width*0, root.height*0.3
+        mode: "rectangle"
+		width: 300
+		halign: 'center'
+		valign: 'center'
+    MDRectangleFlatButton:
+        text: 'Add Friend'
+        pos_size: 5, 1
+		pos: root.width*0, root.height*0.2
+        background_color: 51/255,153/255,255/255,
+        on_press: root.add()
+
