@@ -10,7 +10,7 @@ from firebase_admin import firestore
 import json
 from os import walk
 import time
-from kivy.uix.button import ButtonBehavior
+from kivy.uix.button import ButtonBehavior, Button
 from kivy.uix.image import Image
 from functools import partial
 
@@ -28,23 +28,8 @@ class MainScreenManager(ScreenManager):
 class MyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Light'
-        Builder.load_file('main.kv')
+        Builder.load_file('fitchat.kv')
         return MainScreenManager()
-
-    def capture(self):
-        '''
-        Function to capture the images and give them the names
-        according to their captured time and date.
-        '''
-        camera = self.root.ids.camera
-        timestr = time.strftime("%Y%m%d_%H%M%S")
-        camera.export_to_png("fitChatAvatars/IMG_{}.png".format(timestr))
-        print("Captured")
-        self.root.ids.camera.play = not camera.play
-        self.root.current = 'homepage'
-
-    def cameraScreen(self):
-        self.root.current = 'camera'
 
     def initializeProfile(self):  # function to initialize profile after successful login
         accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
@@ -206,15 +191,15 @@ class MyApp(MDApp):
 
 
     def create(self):
-        self.h = self.height*0.9
+        self.root.current = 'Matching'
+        Matching = self.root.ids.matching
         users = firebase.get('/Users', "")
         for user in users.keys(): 
-            self.h = self.h - self.height*0.08
-            self.img = Image(source =users[user]['profilePicture'],size=(self.width*0.15, self.height*0.08), pos=(self.width*0, self.h))
-            self.btn = Button(text='User: '+str(users[user]['name'] + '\nEmail: ' +users[user]['email'] + '\nInterests: ' + users[user]['sports']), size=(self.width*1, self.height*0.08), pos=(self.width*0.15, self.h), halign = 'left',on_press = self.press)
-            self.list_of_btns.append(self.btn)
-            self.add_widget(self.btn)
-            self.add_widget(self.img)
+            img = Image(source =users[user]['profilePicture'])
+            btn = Button(text='User: '+str(users[user]['name'] + '\nEmail: ' +users[user]['email'] + '\nInterests: ' + users[user]['sports']),on_press = self.press)
+            Matching.list_of_btns.append(btn)
+            Matching.add_widget(btn)
+            Matching.add_widget(img)
 	
     def add(self):
         data = {'': ''}
