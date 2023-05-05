@@ -58,7 +58,7 @@ class MyApp(MDApp):
         self.root.ids.profile_picture.source = profile
 
         sport = accInfo[accountKey]['sports']
-        self.root.ids.sport_label.text = sport
+        self.root.ids.sport_label.text = "Selected Interests: " + str(sport)
 
     def loginScreen(self):
         self.root.current = "createAccount"
