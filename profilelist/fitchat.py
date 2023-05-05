@@ -57,8 +57,8 @@ class MyApp(MDApp):
         profile = accInfo[accountKey]['profilePicture']
         self.root.ids.profile_picture.source = profile
 
-        sport = accInfo[accountKey]['sportSelection']
-        self.root.ids.sport_selectcion.source = sport
+        sport = accInfo[accountKey]['sports']
+        self.root.ids.sport_label.text = sport
 
     def loginScreen(self):
         self.root.current = "createAccount"
@@ -137,7 +137,6 @@ class MyApp(MDApp):
     def change_avatar(self):
         self.root.current = 'change_avatar'
         avatar_grid = self.root.ids.avatar_grid
-        avatar_grid.clear_widgets()
         for root_dir, folders, files in walk("fitChatAvatars"):
             for f in files:
                 if f != '.DS_Store':  # for mac folders
@@ -153,6 +152,7 @@ class MyApp(MDApp):
         bio = self.root.ids.biography.text
         name = self.root.ids.name.text
         profilePicture = "fitChatAvatars/" + image
+        sports = self.root.ids.sports_label.text
 
         data = {
             'email': email,
@@ -160,6 +160,7 @@ class MyApp(MDApp):
             'profilePicture': profilePicture,
             'bio': bio,
             'name': name,
+            'sports' : sports,
         }
 
         accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
@@ -197,13 +198,13 @@ class MyApp(MDApp):
             MyApp.checks.append(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ","
             self.root.ids.sports_label.text = f"{sports}"
         else:
             MyApp.checks.remove(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ","
             self.root.ids.sports_label.text = f"{sports}"
 
     def __init__(self, **kwargs):
@@ -224,7 +225,7 @@ class MyApp(MDApp):
                 profilelist.add_widget(btn)
 
     def add(self):
-        friendemail = self.ids.friendrequest.text
+        friendemail = self.root.ids.friendrequest.text
         users = firebase.get('/Users', "")
         for user in users.keys():
             if users[user]['email'] == friendemail:
@@ -235,9 +236,7 @@ class MyApp(MDApp):
         ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
         ownRequests = users[accountKey]['requests'].split(', ')
         ownFriends = users[accountKey]['friends'].split(', ')
-        print(ownRequests)
         otherRequests = users[otherUser]['requests'].split(', ')
-        print(otherRequests)
         if users[otherUser]['email'] in ownRequests:
             ownRequests.remove(users[otherUser]['email'])
             updateRequest = ', '.join(ownRequests)
