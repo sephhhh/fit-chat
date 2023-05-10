@@ -1,8 +1,13 @@
 <MainScreenManager>:
     MDScreen:
         name: "login"
-        MDFloatLayout:
+        MDBoxLayout:
+            orientation: 'vertical'
             md_bg_color:51/255,153/255,255/255,1
+            spacing: '10 dp'
+            MDCard:
+                md_bg_color:51/255,153/255,255/255,1
+                size_hint: 1, .18
             MDCard:
                 size_hint: 0.8, 0.6
                 size: 600, 800
@@ -27,6 +32,7 @@
                     pos_hint: {'center_x':0.5, 'center_y': 0.9}
                     size_hint_x: None
                     icon_right: "account"
+                    size_hint_x: .8
                     width: 400
 
                 MDTextField:
@@ -38,6 +44,7 @@
                     pos_hint: {'center_x':0.5, 'center_y': 0.7}
                     size_hint_x: None
                     password: True
+                    size_hint_x: .8
                     width: 400
 
                 MDRectangleFlatButton:
@@ -62,6 +69,9 @@
                     font: 20
                     halign: "center"
                     pos_hint: {'center_x':0.5, 'center_y': 0.3}
+            MDCard:
+                size_hint: 1, .18
+                md_bg_color:51/255,153/255,255/255,1
 
 
     MDScreen:
@@ -139,36 +149,52 @@
                                     theme_text_color: "Custom"
                                     text_color: 63/255, 63/255, 191/255, 1
 
+                                MDLabel:
+                                    id: sport_label
+                                    size_hint: 1, .75
+                                    pos_hint: {"center_x": .5, "center_y": .9}
+                                    text: ''
+                                    font_style: "H5"
+                                    theme_text_color: "Custom"
+                                    text_color: 63/255, 63/255, 191/255, 1
+
 
                 MDBottomNavigationItem:
                     name: "screen 2"
                     text: "Chat Room"
                     icon: 'account-multiple-plus'
                     MDScreen:
-                        MDLabel:
-                            id: Chat
-                            text: ""
-                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
-                        MDTextField:
-                            id: message
-                            hint_text: "Enter message"
-                            help_text_mode: "on_focus"
-                            pos_hint: {'center_x':0.5, 'center_y': 0.13}
-                            size_hint_x: None
-                            width: 300
-                            mode: "rectangle"
-                        MDRectangleFlatButton:
-                            text: 'Send message'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.05}
-                            on_press: app.send_data()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,
-                        MDRectangleFlatButton:
-                            text: 'Show Chat History'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.95}
-                            on_press: app.get_hist()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,
+                        MDBoxLayout:
+                            spacing: '5dp'
+                            orientation: 'vertical'
+                            MDRectangleFlatButton:
+                                text: 'Show Chat History'
+                                on_press: app.get_hist()
+                                size_hint: 1,.05
+                                background_color: 51/255,153/255,255/255,
+                            ScrollView:
+                                size_hint: 1, .75
+                                scroll_y: 0
+                                MDLabel:
+                                    id: Chat
+                                    text: ""
+                                    size_hint_y: None
+                                    size: self.texture_size
+                                    halign: 'left'
+                            MDTextField:
+                                id: messageText
+                                hint_text: "Enter message"
+                                help_text_mode: "on_focus"
+                                size_hint: 1,.12
+                                width: 300
+                                mode: "rectangle"
+                            MDRectangleFlatButton:
+                                text: 'Send message'
+                                halign: 'center'
+                                on_press: app.send_data()
+                                size_hint: 1,.1
+                                background_color: 51/255,153/255,255/255,
+
 
                 MDBottomNavigationItem:
                     name: "screen 3"
@@ -290,29 +316,22 @@
                             MDRectangleFlatButton:
                                 size_hint: 1, .1
 		                        text: 'Show Friends'
-		                        on_press: app.create()
-		                    MDLabel:
-		                        size_hint: 1, .6
-	                        MDTextField:
-                                id: message
-                                hint_text: "Friend Email"
-                                help_text_mode: "on_focus"
-                                size_hint: 1, .1
-                                mode: "rectangle"
-	                        	width: 300
-                	        	halign: 'center'
-	                        	valign: 'center'
-                            MDRectangleFlatButton:
-                                text: 'Add Friend'
-                                size_hint: 1, .1
-	                            pos: root.width*0, root.height*0.2
-                                background_color: 51/255,153/255,255/255,
+		                        on_press: app.showFriendList()
+		                    ScrollView:
+		                        size_hint: 1, .8
+		                        MDBoxLayout:
+		                            orientation: 'vertical'
+		                            id: friendList
+
                             MDBoxLayout:
-                                size_hint: 1, .08
+                                size_hint: 1, .1
                                 orientation: 'horizontal'
                                 MDRectangleFlatButton:
                                     on_press: app.profileListScreen()
-                                    text: "placeholder 1"
+                                    text: "Add friends"
+                                MDRectangleFlatButton:
+                                    on_press: app.friendRequestScreen()
+                                    text: "View Friend Requests"
 
     MDScreen:
         name: "change_avatar"
@@ -391,7 +410,7 @@
             MDRectangleFlatButton:
                 size_hint: 1, .1
                 text: 'Show Users'
-                on_press: app.create()
+                on_press: app.createProfileList()
 
             ScrollView:
                 size_hint: 1, .8
@@ -401,7 +420,7 @@
                     height: self.minimum_height
 
             MDTextField:
-                id: message
+                id: friendrequest
                 hint_text: "Friend Email"
                 help_text_mode: "on_focus"
                 size_hint: 1, .1
@@ -410,11 +429,55 @@
                 halign: 'center'
                 valign: 'center'
             MDRectangleFlatButton:
+                on_press: app.add('friendrequest')
                 text: 'Add Friend'
                 size_hint: 1, .1
                 pos: root.width*0, root.height*0.2
                 background_color: 51/255,153/255,255/255,
-	MDScreen:
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+
+    MDScreen:
+        name: 'friendRequests'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                size_hint: 1, .1
+                text: 'Show Requests From Other Users'
+                on_press: app.showRequests()
+
+            ScrollView:
+                size_hint: 1, .8
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    id: requests
+                    height: self.minimum_height
+
+            MDTextField:
+                id: acceptFriendRequest
+                hint_text: "Enter the requester's email to accept"
+                help_text_mode: "on_focus"
+                size_hint: 1, .1
+                mode: "rectangle"
+                width: 300
+                halign: 'center'
+                valign: 'center'
+            MDRectangleFlatButton:
+                on_press: app.add('acceptFriendRequest')
+                text: 'Add Friend'
+                size_hint: 1, .1
+                pos: root.width*0, root.height*0.2
+                background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+
+    MDScreen:
         name: 'camera'
         orientation: 'vertical'
         MDBoxLayout:
@@ -436,4 +499,3 @@
                 size_hint_y: None
                 height: '110dp'
                 on_press: app.capture()
-
