@@ -263,5 +263,6 @@ class MyApp(MDApp):
         webbrowser.open("https://www.freeprivacypolicy.com/live/e80d9fa1-6aba-4479-bd20-f4a73d129eaf/")
 
 
+
 if __name__ == '__main__':
     MyApp().run()
