@@ -4,9 +4,10 @@
         MDBoxLayout:
             orientation: 'vertical'
             md_bg_color:51/255,153/255,255/255,1
+            spacing: '10 dp'
             MDCard:
                 md_bg_color:51/255,153/255,255/255,1
-                size_hint: 1, .08
+                size_hint: 1, .18
             MDCard:
                 size_hint: 0.8, 0.6
                 size: 600, 800
@@ -22,7 +23,6 @@
                     halign: 'center'
                     size_hint_y: None
                     height: self.texture_size[1]
-                    size_hint_x: .8
                     padding_y: 25
 
                 MDTextField:
@@ -70,7 +70,7 @@
                     halign: "center"
                     pos_hint: {'center_x':0.5, 'center_y': 0.3}
             MDCard:
-                size_hint: 1, .02
+                size_hint: 1, .18
                 md_bg_color:51/255,153/255,255/255,1
 
 
@@ -148,7 +148,7 @@
                                     font_style: "H5"
                                     theme_text_color: "Custom"
                                     text_color: 63/255, 63/255, 191/255, 1
-                                
+
                                 MDLabel:
                                     id: sport_label
                                     size_hint: 1, .75
