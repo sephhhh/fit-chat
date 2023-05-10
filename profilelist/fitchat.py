@@ -259,6 +259,9 @@ class MyApp(MDApp):
     def press(self, instance):
         pass
 
+    def privacy_policy(instance):
+        webbrowser.open("https://www.freeprivacypolicy.com/live/e80d9fa1-6aba-4479-bd20-f4a73d129eaf/")
+
 
 if __name__ == '__main__':
     MyApp().run()
