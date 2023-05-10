@@ -57,14 +57,20 @@ class MyApp(MDApp):
         profile = accInfo[accountKey]['profilePicture']
         self.root.ids.profile_picture.source = profile
 
-        sport = accInfo[accountKey]['sportSelection']
-        self.root.ids.sport_selectcion.source = sport
+        sport = accInfo[accountKey]['sports']
+        self.root.ids.sport_label.text = "Selected Interests: " + str(sport)
 
     def loginScreen(self):
         self.root.current = "createAccount"
 
     def profileListScreen(self):
         self.root.current = 'profileList'
+
+    def friendRequestScreen(self):
+        self.root.current = 'friendRequests'
+
+    def homeScreen(self):
+        self.root.current = 'homepage'
 
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
@@ -152,6 +158,7 @@ class MyApp(MDApp):
         bio = self.root.ids.biography.text
         name = self.root.ids.name.text
         profilePicture = "fitChatAvatars/" + image
+        sports = self.root.ids.sports_label.text
 
         data = {
             'email': email,
@@ -159,6 +166,7 @@ class MyApp(MDApp):
             'profilePicture': profilePicture,
             'bio': bio,
             'name': name,
+            'sports' : sports,
         }
 
         accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
@@ -175,14 +183,20 @@ class MyApp(MDApp):
         messages = firebase.get('/Chat', "")
         newMessages = ""
         for i in messages.keys():
-            newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: ' + (messages[i]["Message"])
+            email = self.root.ids.email.text
+            if messages[i]["Email"] == email:
+                email = 'You'
+            else:
+                email = messages[i]["Email"]
+            #newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: \n' + (messages[i]["Message"] + '\n')
+            newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
         self.root.ids.Chat.text = newMessages
 
-    def send_data(self):
+    def send_data(self, chat = 'Chat'):
         email = self.root.ids.email.text
         data = {'Message': '',
                 'Email': email}
-        message = self.root.ids.message.text
+        message = self.root.ids.messageText.text
         data['Message'] = message
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
         self.root.ids.Chat.text += "\n" + email + ' said: ' + message
@@ -196,13 +210,13 @@ class MyApp(MDApp):
             MyApp.checks.append(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ","
             self.root.ids.sports_label.text = f"{sports}"
         else:
             MyApp.checks.remove(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ","
             self.root.ids.sports_label.text = f"{sports}"
 
     def __init__(self, **kwargs):
@@ -210,18 +224,80 @@ class MyApp(MDApp):
 
         self.list_of_btns = []
 
-    def create(self):
+    def createProfileList(self):
         profilelist = self.root.ids.profileListing
+        profilelist.clear_widgets()
         #avatar_grid = self.root.ids.avatar_grid
         users = firebase.get('/Users', '')
         for user in users.keys():
-            img = Image(source = users[user]['profilePicture']) # pos_hint = {'x':.8,'y': 1})
-            btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
-            profilelist.add_widget(img)
-            profilelist.add_widget(btn)
+            if user != accountKey:
+                img = Image(source = users[user]['profilePicture'])
+                btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
+                profilelist.add_widget(img)
+                profilelist.add_widget(btn)
 
-    def add(self):
-        data = {'': ''}
+    def showFriendList(self):
+        friendListScreen = self.root.ids.friendList
+        friendListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        friends = users[accountKey]['friends']
+        friendList = friends.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in friendList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                friendListScreen.add_widget(img)
+                friendListScreen.add_widget(btn)
+
+    def showRequests(self):
+        requestsListScreen = self.root.ids.requests
+        requestsListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        requests = users[accountKey]['requests']
+        requestsList = requests.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in requestsList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                requestsListScreen.add_widget(img)
+                requestsListScreen.add_widget(btn)
+
+
+    def add(self, screen):
+        friendemail = self.root.ids[screen].text
+        users = firebase.get('/Users', "")
+        for user in users.keys():
+            if users[user]['email'] == friendemail:
+                otherUser = user
+            elif user == accountKey:
+                ownEmail = users[user]['email']
+        storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+        ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+        ownRequests = users[accountKey]['requests'].split(', ')
+        ownFriends = users[accountKey]['friends'].split(', ')
+        otherRequests = users[otherUser]['requests'].split(', ')
+        if users[otherUser]['email'] in ownRequests:
+            ownRequests.remove(users[otherUser]['email'])
+            updateRequest = ', '.join(ownRequests)
+            data = {'requests' : updateRequest}
+            firebase.patch(ownstoreEmail, data)
+            addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
+            data = {'friends' : addData}
+            firebase.patch(ownstoreEmail, data)
+            addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
+            data = {'friends' : addotherData}
+            firebase.patch(storeEmail, data)
+        elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
+            pass
+        else:
+            addData = users[otherUser]['requests'] + ', ' + ownEmail
+            data = {'requests' : addData}
+            firebase.patch(storeEmail,data)
+
 
     def press(self, instance):
         pass
