@@ -13,6 +13,7 @@ import time
 from kivy.uix.button import ButtonBehavior, Button
 from kivy.uix.image import Image
 from functools import partial
+import webbrowser
 
 Window.size = (350, 700)
 
@@ -227,34 +228,34 @@ class MyApp(MDApp):
     def add(self):
         friendemail = self.root.ids.friendrequest.text
         users = firebase.get('/Users', "")
+        ownEmail = users[accountKey]['email']
         for user in users.keys():
             if users[user]['email'] == friendemail:
                 otherUser = user
-            elif user == accountKey:
-                ownEmail = users[user]['email']
-        storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
-        ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-        ownRequests = users[accountKey]['requests'].split(', ')
-        ownFriends = users[accountKey]['friends'].split(', ')
-        otherRequests = users[otherUser]['requests'].split(', ')
-        if users[otherUser]['email'] in ownRequests:
-            ownRequests.remove(users[otherUser]['email'])
-            updateRequest = ', '.join(ownRequests)
-            data = {'requests' : updateRequest}
-            firebase.patch(ownstoreEmail, data)
-            addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
-            data = {'friends' : addData}
-            firebase.patch(ownstoreEmail, data)
-            addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
-            data = {'friends' : addotherData}
-            firebase.patch(storeEmail, data)
-        elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
-            pass
-        else:
-            addData = users[otherUser]['requests'] + ', ' + ownEmail
-            data = {'requests' : addData}
-            firebase.patch(storeEmail,data)
-
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownRequests = users[accountKey]['requests'].split(', ')
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherRequests = users[otherUser]['requests'].split(', ')
+                if users[otherUser]['email'] in ownRequests:
+                    ownRequests.remove(users[otherUser]['email'])
+                    updateRequest = ', '.join(ownRequests)
+                    data = {'requests' : updateRequest}
+                    firebase.patch(ownstoreEmail, data)
+                    addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
+                    data = {'friends' : addData}
+                    firebase.patch(ownstoreEmail, data)
+                    addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
+                    data = {'friends' : addotherData}
+                    firebase.patch(storeEmail, data)
+                elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
+                    pass
+                else:
+                    addData = users[otherUser]['requests'] + ', ' + ownEmail
+                    data = {'requests' : addData}
+                    firebase.patch(storeEmail,data)
+            else:
+                pass
 
     def press(self, instance):
         pass
