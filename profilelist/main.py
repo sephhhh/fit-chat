@@ -28,7 +28,7 @@ class MainScreenManager(ScreenManager):
 class MyApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Light'
-        Builder.load_file('fitchat.kv')
+        Builder.load_file('main.kv')
         return MainScreenManager()
 
     def capture(self):
@@ -267,8 +267,8 @@ class MyApp(MDApp):
                 requestsListScreen.add_widget(btn)
 
 
-    def add(self):
-        friendemail = self.root.ids.friendrequest.text
+    def add(self,screen):
+        friendemail = self.root.ids[screen].text
         users = firebase.get('/Users', "")
         ownEmail = users[accountKey]['email']
         for user in users.keys():
@@ -301,4 +301,5 @@ class MyApp(MDApp):
 
     def press(self, instance):
         pass
-
+if __name__ == '__main__':
+    MyApp().run()
