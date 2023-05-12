@@ -7,12 +7,12 @@ from firebase import firebase
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import json
 from os import walk
 import time
 from kivy.uix.button import ButtonBehavior, Button
 from kivy.uix.image import Image
 from functools import partial
+import webbrowser
 
 Window.size = (350, 700)
 
@@ -70,6 +70,11 @@ class MyApp(MDApp):
         self.root.current = 'friendRequests'
 
     def homeScreen(self):
+        self.root.current = 'homepage'
+
+    def homeScreenCamera(self):
+        camera = self.root.ids.camera
+        self.root.ids.camera.play = not camera.play
         self.root.current = 'homepage'
 
     def get_data(self):  # function for submit button
@@ -219,6 +224,9 @@ class MyApp(MDApp):
                 sports = f"{sports} {i}" + ","
             self.root.ids.sports_label.text = f"{sports}"
 
+    def privacy_policy(instance):
+        webbrowser.open("https://www.freeprivacypolicy.com/live/e80d9fa1-6aba-4479-bd20-f4a73d129eaf/")
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -267,39 +275,40 @@ class MyApp(MDApp):
                 requestsListScreen.add_widget(btn)
 
 
-    def add(self,screen):
+    def add(self, screen):
         friendemail = self.root.ids[screen].text
         users = firebase.get('/Users', "")
-        ownEmail = users[accountKey]['email']
         for user in users.keys():
             if users[user]['email'] == friendemail:
                 otherUser = user
-                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
-                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-                ownRequests = users[accountKey]['requests'].split(', ')
-                ownFriends = users[accountKey]['friends'].split(', ')
-                otherRequests = users[otherUser]['requests'].split(', ')
-                if users[otherUser]['email'] in ownRequests:
-                    ownRequests.remove(users[otherUser]['email'])
-                    updateRequest = ', '.join(ownRequests)
-                    data = {'requests' : updateRequest}
-                    firebase.patch(ownstoreEmail, data)
-                    addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
-                    data = {'friends' : addData}
-                    firebase.patch(ownstoreEmail, data)
-                    addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
-                    data = {'friends' : addotherData}
-                    firebase.patch(storeEmail, data)
-                elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
-                    pass
-                else:
-                    addData = users[otherUser]['requests'] + ', ' + ownEmail
-                    data = {'requests' : addData}
-                    firebase.patch(storeEmail,data)
-            else:
-                pass
+            elif user == accountKey:
+                ownEmail = users[user]['email']
+        storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+        ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+        ownRequests = users[accountKey]['requests'].split(', ')
+        ownFriends = users[accountKey]['friends'].split(', ')
+        otherRequests = users[otherUser]['requests'].split(', ')
+        if users[otherUser]['email'] in ownRequests:
+            ownRequests.remove(users[otherUser]['email'])
+            updateRequest = ', '.join(ownRequests)
+            data = {'requests' : updateRequest}
+            firebase.patch(ownstoreEmail, data)
+            addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
+            data = {'friends' : addData}
+            firebase.patch(ownstoreEmail, data)
+            addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
+            data = {'friends' : addotherData}
+            firebase.patch(storeEmail, data)
+        elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
+            pass
+        else:
+            addData = users[otherUser]['requests'] + ', ' + ownEmail
+            data = {'requests' : addData}
+            firebase.patch(storeEmail,data)
+
 
     def press(self, instance):
         pass
+
 if __name__ == '__main__':
     MyApp().run()

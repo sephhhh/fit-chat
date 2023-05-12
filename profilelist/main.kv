@@ -69,6 +69,12 @@
                     font: 20
                     halign: "center"
                     pos_hint: {'center_x':0.5, 'center_y': 0.3}
+
+                MDRectangleFlatButton:
+                    text: "FitChat Privacy Policy"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.275}
+                    on_press: app.privacy_policy()
+
             MDCard:
                 size_hint: 1, .18
                 md_bg_color:51/255,153/255,255/255,1
@@ -499,3 +505,7 @@
                 size_hint_y: None
                 height: '110dp'
                 on_press: app.capture()
+            MDRectangleFlatButton:
+                on_press: app.homeScreenCamera()
+                text: "Go Back"
+                size_hint: 1, .1
