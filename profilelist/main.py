@@ -14,6 +14,8 @@ from kivy.uix.image import Image
 from functools import partial
 import webbrowser
 
+from kivymd.uix.button import MDRectangleFlatButton
+
 Window.size = (350, 700)
 
 
@@ -47,6 +49,7 @@ class MyApp(MDApp):
         self.root.current = 'camera'
 
     def initializeProfile(self):  # function to initialize profile after successful login
+        self.root.ids.camera.play = False
         accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
         name = accInfo[accountKey]['name']
         self.root.ids.name.text = name
@@ -58,7 +61,28 @@ class MyApp(MDApp):
         self.root.ids.profile_picture.source = profile
 
         sport = accInfo[accountKey]['sports']
-        self.root.ids.sport_label.text = "Selected Interests: " + str(sport)
+        self.root.ids.sport_label.text = "Selected Interests: " + str(sport[0:len(sport) - 1])
+
+        #displays chatrooms depending on interests
+        chatRoomScreen = self.root.ids.chatRooms
+        chatRoomScreen.clear_widgets()
+
+        sport.strip()
+        sport = sport[1:len(sport) - 1]
+        sportList = sport.split(', ')
+
+        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, "Chat"))
+        chatRoomScreen.add_widget(publicRoom)
+
+        for sports in sportList:
+            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, sports))
+            chatRoomScreen.add_widget(chatRooms)
+
+        print(sportList)
+
+
+    def chatRoomScreenToggle(self, room, id):
+        self.root.current = room
 
     def loginScreen(self):
         self.root.current = "createAccount"
@@ -73,9 +97,11 @@ class MyApp(MDApp):
         self.root.current = 'homepage'
 
     def homeScreenCamera(self):
-        camera = self.root.ids.camera
-        self.root.ids.camera.play = not camera.play
+        self.root.ids.camera.play = False
         self.root.current = 'homepage'
+
+    def backToLoginScreen(self):
+        self.root.current = 'login'
 
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
@@ -184,8 +210,10 @@ class MyApp(MDApp):
     firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
     global accountKey
 
-    def get_hist(self):
-        messages = firebase.get('/Chat', "")
+    def get_hist(self, chatroom):
+        chatroomLink = "/" + chatroom
+        chatroomRoom = chatroom + "Chat"
+        messages = firebase.get(chatroomLink, "")
         newMessages = ""
         for i in messages.keys():
             email = self.root.ids.email.text
@@ -193,18 +221,20 @@ class MyApp(MDApp):
                 email = 'You'
             else:
                 email = messages[i]["Email"]
-            #newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: \n' + (messages[i]["Message"] + '\n')
             newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
-        self.root.ids.Chat.text = newMessages
+        self.root.ids[chatroomRoom].text = newMessages
 
-    def send_data(self, chat = 'Chat'):
+    def send_data(self, chatroom):
         email = self.root.ids.email.text
+        chatroomLink = "/" + chatroom
+        chatroomText = chatroom + "MessageText"
+        chatroomRoom = chatroom + "Chat"
         data = {'Message': '',
                 'Email': email}
-        message = self.root.ids.messageText.text
+        message = self.root.ids[chatroomText].text
         data['Message'] = message
-        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
-        self.root.ids.Chat.text += "\n" + email + ' said: ' + message
+        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
+        self.root.ids[chatroomRoom].text += "\n" + 'You said: \n' + message + "\n"
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)
