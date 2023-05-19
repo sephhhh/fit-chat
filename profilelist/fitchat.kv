@@ -63,17 +63,18 @@
                     height: 100
                     background_color: 51/255,153/255,255/255,1
 
-                MDRectangleFlatButton:
-                    text: "FitChat Privacy Policy"
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.275}
-                    on_press: app.privacy_policy()
-
                 MDLabel:
                     id: login_message
                     text:
                     font: 20
                     halign: "center"
                     pos_hint: {'center_x':0.5, 'center_y': 0.3}
+
+                MDRectangleFlatButton:
+                    text: "FitChat Privacy Policy"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.275}
+                    on_press: app.privacy_policy()
+
             MDCard:
                 size_hint: 1, .18
                 md_bg_color:51/255,153/255,255/255,1
@@ -104,7 +105,6 @@
                             MDCard:
                                 size_hint: 1, .1
                                 md_bg_color:51/255,153/255,255/255,1
-
 
                             MDCard:
                                 spacing: '2dp'
@@ -169,79 +169,71 @@
                     text: "Chat Room"
                     icon: 'account-multiple-plus'
                     MDScreen:
-                        MDLabel:
-                            id: Chat
-                            text: ""
-                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
-                        MDTextField:
-                            id: message
-                            hint_text: "Enter message"
-                            help_text_mode: "on_focus"
-                            pos_hint: {'center_x':0.5, 'center_y': 0.13}
-                            size_hint_x: None
-                            width: 300
-                            mode: "rectangle"
-                        MDRectangleFlatButton:
-                            text: 'Send message'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.05}
-                            on_press: app.send_data()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,
-                        MDRectangleFlatButton:
-                            text: 'Show Chat History'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.95}
-                            on_press: app.get_hist()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDLabel:
+                                halign: 'center'
+                                text: "Choose a Chatroom"
+                                size_hint: 1, .2
+                            ScrollView:
+                                MDBoxLayout:
+                                    id: chatRooms
+                                    orientation: 'vertical'
+                                    size_hint: 1, .8
 
                 MDBottomNavigationItem:
                     name: "screen 3"
                     text: "Settings"
                     icon: 'account-cog'
                     MDScreen:
-                        MDTextField:
-                            id: change_name
-                            hint_text: "Enter Full Name"
-                            help_text_mode: "on_focus"
-                            pos_hint: {'center_x':0.5, 'center_y': 0.9}
-                            size_hint_x: None
-                            width: 500
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            spacing: '10dp'
+                            MDTextField:
+                                id: change_name
+                                hint_text: "Enter Full Name"
+                                help_text_mode: "on_focus"
+                                pos_hint: {'center_x':0.5}
+                                size_hint: .8, .04
 
-                        MDTextField:
-                            id: change_bio
-                            hint_text: "Describe Yourself in a Biography"
-                            multiline: True
-                            help_text_mode: "on_focus"
-                            pos_hint: {'center_x':0.5, 'center_y': 0.7}
-                            size_hint_x: None
-                            width: 500
+                            MDTextField:
+                                id: change_bio
+                                hint_text: "Describe Yourself in a Biography"
+                                multiline: True
+                                help_text_mode: "on_focus"
+                                pos_hint: {'center_x':0.5}
+                                size_hint: .8, .10
 
-                        MDRectangleFlatButton:
-                            text: 'Take a Picture'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
-                            on_press: app.cameraScreen()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,1
+                            MDRectangleFlatButton:
+                                text: 'Take a Picture'
+                                pos_hint: {'center_x':0.5}
+                                on_press: app.cameraScreen()
+                                size_hint: .3,.01
+                                background_color: 51/255,153/255,255/255,1
 
-                        MDRectangleFlatButton:
-                            text: 'Change Avatar'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.3}
-                            on_press: app.change_avatar()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,1
+                            MDRectangleFlatButton:
+                                text: 'Change Avatar'
+                                pos_hint: {'center_x':0.5}
+                                on_press: app.change_avatar()
+                                size_hint: .3,.01
+                                background_color: 51/255,153/255,255/255,1
 
-                        MDLabel:
-                            id: change_text
-                            text: ''
-                            pos_hint: {'center_x':0.5, 'center_y': 0.2}
-                            size_hint: .3,.05
+                            MDLabel:
+                                id: change_text
+                                text: ''
+                                pos_hint: {'center_x':0.5}
+                                size_hint: .3,.03
 
-                        MDRectangleFlatButton:
-                            text: 'Submit Profile'
-                            pos_hint: {'center_x':0.5, 'center_y': 0.1}
-                            on_press: app.change_data()
-                            size_hint: .3,.05
-                            background_color: 51/255,153/255,255/255,1
+                            MDRectangleFlatButton:
+                                text: 'Submit Profile'
+                                pos_hint: {'center_x':0.5}
+                                on_press: app.change_data()
+                                size_hint: .3,.01
+                                background_color: 51/255,153/255,255/255,1
+                            MDLabel:
+                                size_hint: 1, .05
+                                text: ''
+
                 MDBottomNavigationItem:
                     name: "screen 4 "
                     text: "Interests"
@@ -314,29 +306,25 @@
                             MDRectangleFlatButton:
                                 size_hint: 1, .1
 		                        text: 'Show Friends'
-		                        on_press: app.create()
-		                    MDLabel:
-		                        size_hint: 1, .6
-	                        MDTextField:
-                                id: message
-                                hint_text: "Friend Email"
-                                help_text_mode: "on_focus"
-                                size_hint: 1, .1
-                                mode: "rectangle"
-	                        	width: 300
-                	        	halign: 'center'
-	                        	valign: 'center'
-                            MDRectangleFlatButton:
-                                text: 'Add Friend'
-                                size_hint: 1, .1
-	                            pos: root.width*0, root.height*0.2
-                                background_color: 51/255,153/255,255/255,
+		                        on_press: app.showFriendList()
+		                    ScrollView:
+		                        size_hint: 1, .8
+		                        MDBoxLayout:
+		                            orientation: 'vertical'
+		                            id: friendList
+
                             MDBoxLayout:
-                                size_hint: 1, .08
+                                size_hint: 1, .1
                                 orientation: 'horizontal'
                                 MDRectangleFlatButton:
                                     on_press: app.profileListScreen()
-                                    text: "placeholder 1"
+                                    text: "Add friends"
+                                MDRectangleFlatButton:
+                                    on_press: app.friendRequestScreen()
+                                    text: "Friend Requests"
+                                MDRectangleFlatButton:
+                                    on_press: app.friendRemoveScreen()
+                                    text: "Remove Friends"
 
     MDScreen:
         name: "change_avatar"
@@ -353,60 +341,69 @@
 
     MDScreen:
         name: 'createAccount'
-        MDTextField:
-            id: newName
-            hint_text: "Enter Full Name"
-            help_text_mode: "on_focus"
-            pos_hint: {'center_x':0.5, 'center_y': 0.9}
-            size_hint_x: None
-            width: 500
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: '10dp'
+            MDRectangleFlatButton:
+                text: "Go back"
+                pos_hint: {'center_x':0.1}
+                size_hint: .25, .01
+                on_press: app.backToLoginScreen()
 
-        MDTextField:
-            id: newEmail
-            hint_text: "Enter Email"
-            help_text_mode: "on_focus"
-            pos_hint: {'center_x':0.5, 'center_y': 0.8}
-            size_hint_x: None
-            width: 500
+            MDTextField:
+                id: newName
+                hint_text: "Enter Full Name"
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5}
+                size_hint: .8, .03
 
-        MDTextField:
-            id: newPassword
-            hint_text: "Enter Password"
-            password: True
-            help_text_mode: "on_focus"
-            pos_hint: {'center_x':0.5, 'center_y': 0.7}
-            size_hint_x: None
-            width: 500
+            MDTextField:
+                id: newEmail
+                hint_text: "Enter Email"
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5, 'center_y': 0.8}
+                size_hint: .8, .03
 
-        MDTextField:
-            id: newBio
-            hint_text: "Describe Yourself in a Biography"
-            multiline: True
-            help_text_mode: "on_focus"
-            pos_hint: {'center_x':0.5, 'center_y': 0.55}
-            size_hint: None, None
-            text_size: root.width, None
-            width: 500
+            MDTextField:
+                id: newPassword
+                hint_text: "Enter Password"
+                password: True
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5}
+                size_hint: .8, .03
 
-        MDRectangleFlatButton:
-            text: 'Avatar'
-            pos_hint: {'center_x':0.5, 'center_y': 0.3}
-            on_press: app.change_avatar()
-            size_hint: .3,.05
-            background_color: 51/255,153/255,255/255,1
+            MDTextField:
+                id: newBio
+                hint_text: "Describe Yourself in a Biography"
+                multiline: True
+                help_text_mode: "on_focus"
+                pos_hint: {'center_x':0.5}
+                text_size: root.width, None
+                size_hint: .8, .08
 
-        MDLabel:
-            id: change_text
-            text: ''
-            pos_hint: {'center_x':0.5, 'center_y': 0.2}
-            size_hint: .3,.05
+            MDRectangleFlatButton:
+                text: 'Avatar'
+                pos_hint: {'center_x':0.5}
+                on_press: app.change_avatar()
+                size_hint: .5, .02
+                background_color: 51/255,153/255,255/255,1
 
-        MDRectangleFlatButton:
-            text: 'Submit Account Information'
-            pos_hint: {'center_x':0.5, 'center_y': 0.1}
-            on_press: app.createAccount()
-            size_hint: .3,.05
-            background_color: 51/255,153/255,255/255,1
+            MDLabel:
+                id: change_text
+                text: ''
+                pos_hint: {'center_x':0.5}
+                size_hint: .8, .05
+
+            MDRectangleFlatButton:
+                text: 'Submit Account Information'
+                pos_hint: {'center_x':0.5}
+                on_press: app.createAccount()
+                size_hint: .5, .02
+                background_color: 51/255,153/255,255/255,1
+
+            MDLabel:
+                text: ''
+                size_hint: 1, .01
 
     MDScreen:
         name: 'profileList'
@@ -415,7 +412,7 @@
             MDRectangleFlatButton:
                 size_hint: 1, .1
                 text: 'Show Users'
-                on_press: app.create()
+                on_press: app.createProfileList()
 
             ScrollView:
                 size_hint: 1, .8
@@ -434,11 +431,90 @@
                 halign: 'center'
                 valign: 'center'
             MDRectangleFlatButton:
-                on_press: app.add()
+                on_press: app.add('friendrequest')
                 text: 'Add Friend'
                 size_hint: 1, .1
                 pos: root.width*0, root.height*0.2
                 background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+
+    MDScreen:
+        name: 'friendRequests'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                size_hint: 1, .1
+                text: 'Show Requests From Other Users'
+                on_press: app.showRequests()
+
+            ScrollView:
+                size_hint: 1, .8
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    id: requests
+                    height: self.minimum_height
+
+            MDTextField:
+                id: acceptFriendRequest
+                hint_text: "Enter the requester's email to accept"
+                help_text_mode: "on_focus"
+                size_hint: 1, .1
+                mode: "rectangle"
+                width: 300
+                halign: 'center'
+                valign: 'center'
+            MDRectangleFlatButton:
+                on_press: app.add('acceptFriendRequest')
+                text: 'Add Friend'
+                size_hint: 1, .1
+                pos: root.width*0, root.height*0.2
+                background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+    MDScreen:
+        name: 'removeFriend'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                size_hint: 1, .1
+                text: 'Show Friends'
+                on_press: app.showRemoveList()
+
+            ScrollView:
+                size_hint: 1, .8
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    id: removeList
+                    height: self.minimum_height
+
+            MDTextField:
+                id: removeFriendInput
+                hint_text: "Enter the friend's email to unadd"
+                help_text_mode: "on_focus"
+                size_hint: 1, .1
+                mode: "rectangle"
+                width: 300
+                halign: 'center'
+                valign: 'center'
+            MDRectangleFlatButton:
+                on_press: app.remove('removeFriendInput')
+                text: 'Remove Friend'
+                size_hint: 1, .1
+                pos: root.width*0, root.height*0.2
+                background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+                
     MDScreen:
         name: 'camera'
         orientation: 'vertical'
@@ -461,3 +537,46 @@
                 size_hint_y: None
                 height: '110dp'
                 on_press: app.capture()
+            MDRectangleFlatButton:
+                on_press: app.homeScreenCamera()
+                text: "Go Back"
+                size_hint: 1, .1
+    MDScreen:
+        name: 'Chatroom'
+        MDBoxLayout:
+            spacing: '5dp'
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                id: chatHistoryButton
+                text: 'Show Chat History'
+                on_press: app.get_hist("Chat")
+                size_hint: 1,.05
+                background_color: 51/255,153/255,255/255,
+            ScrollView:
+                size_hint: 1, .75
+                scroll_y: 0
+                MDLabel:
+                    id: ChatList
+                    text: ""
+                    size_hint_y: None
+                    size: self.texture_size
+                    halign: 'left'
+            MDTextField:
+                id: ChatroomMessageText
+                hint_text: "Enter message"
+                help_text_mode: "on_focus"
+                size_hint: 1,.12
+                width: 300
+                mode: "rectangle"
+            MDRectangleFlatButton:
+                id: sendMessageButton
+                text: 'Send message'
+                halign: 'center'
+                on_press:
+                size_hint: 1,.1
+                background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreenCamera()
+                text: "Go Back"
+                size_hint: 1, .1
+
