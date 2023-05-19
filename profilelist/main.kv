@@ -321,7 +321,10 @@
                                     text: "Add friends"
                                 MDRectangleFlatButton:
                                     on_press: app.friendRequestScreen()
-                                    text: "View Friend Requests"
+                                    text: "Friend Requests"
+                                MDRectangleFlatButton:
+                                    on_press: app.friendRemoveScreen()
+                                    text: "Remove Friends"
 
     MDScreen:
         name: "change_avatar"
@@ -475,7 +478,43 @@
                 text: "Go Back"
                 size_hint: 1, .1
                 background_color: 51/255,153/255,255/255,
+        MDScreen:
+        name: 'removeFriend'
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDRectangleFlatButton:
+                size_hint: 1, .1
+                text: 'Show Friends'
+                on_press: app.showRemoveList()
 
+            ScrollView:
+                size_hint: 1, .8
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    id: removeList
+                    height: self.minimum_height
+
+            MDTextField:
+                id: removeFriendInput
+                hint_text: "Enter the friend's email to unadd"
+                help_text_mode: "on_focus"
+                size_hint: 1, .1
+                mode: "rectangle"
+                width: 300
+                halign: 'center'
+                valign: 'center'
+            MDRectangleFlatButton:
+                on_press: app.remove('removeFriendInput')
+                text: 'Remove Friend'
+                size_hint: 1, .1
+                pos: root.width*0, root.height*0.2
+                background_color: 51/255,153/255,255/255,
+            MDRectangleFlatButton:
+                on_press: app.homeScreen()
+                text: "Go Back"
+                size_hint: 1, .1
+                background_color: 51/255,153/255,255/255,
+                
     MDScreen:
         name: 'camera'
         orientation: 'vertical'
