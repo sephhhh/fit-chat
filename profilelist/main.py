@@ -71,7 +71,7 @@ class MyApp(MDApp):
         sport = sport[1:len(sport) - 1]
         sportList = sport.split(', ')
 
-        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, "Chat"))
+        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, "Chatroom"))
         chatRoomScreen.add_widget(publicRoom)
 
         for sports in sportList:
@@ -79,10 +79,10 @@ class MyApp(MDApp):
             chatRoomScreen.add_widget(chatRooms)
 
         print(sportList)
-
-
     def chatRoomScreenToggle(self, room, id):
         self.root.ids.ChatList.text = ''
+        self.root.ids.sendMessageButton.on_press = partial(self.send_data, room)
+        self.root.ids.chatHistoryButton.on_press = partial(self.get_hist, room)
         self.root.current = "Chatroom"
 
     def loginScreen(self):
@@ -93,9 +93,6 @@ class MyApp(MDApp):
 
     def friendRequestScreen(self):
         self.root.current = 'friendRequests'
-    
-    def friendRemoveScreen(self):
-        self.root.current = 'removeFriend'
 
     def homeScreen(self):
         self.root.current = 'homepage'
@@ -231,13 +228,14 @@ class MyApp(MDApp):
     def send_data(self, chatroom):
         email = self.root.ids.email.text
         chatroomLink = "/" + chatroom
-        chatroomText = chatroom + "MessageText"
+        chatroomText = "ChatroomMessageText"
         data = {'Message': '',
                 'Email': email}
         message = self.root.ids[chatroomText].text
         data['Message'] = message
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
         self.root.ids.ChatList.text += "\n" + 'You said: \n' + message + "\n"
+        self.root.ids[chatroomText].text = ''
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)
@@ -279,21 +277,6 @@ class MyApp(MDApp):
 
     def showFriendList(self):
         friendListScreen = self.root.ids.friendList
-        friendListScreen.clear_widgets()
-        users = firebase.get('/Users', '')
-        friends = users[accountKey]['friends']
-        friendList = friends.split(', ')
-        for user in users.keys():
-            if users[user]['email'] in friendList:
-                img = Image(source=users[user]['profilePicture'])
-                btn = Button(text='User: ' + str(
-                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
-                             on_press=self.press)
-                friendListScreen.add_widget(img)
-                friendListScreen.add_widget(btn)
-
-    def showRemoveList(self):
-        friendListScreen = self.root.ids.removeList
         friendListScreen.clear_widgets()
         users = firebase.get('/Users', '')
         friends = users[accountKey]['friends']
@@ -354,28 +337,7 @@ class MyApp(MDApp):
             data = {'requests' : addData}
             firebase.patch(storeEmail,data)
 
-    def remove(self, screen):
-        friendemail = self.root.ids[screen].text
-        users = firebase.get('/Users', "")
-        for user in users.keys():
-            if users[user]['email'] == friendemail:
-                otherUser = user
-                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
-                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-                ownFriends = users[accountKey]['friends'].split(', ')
-                otherFriends = users[otherUser]['friends'].split(', ')
-                if users[otherUser]['email'] in ownFriends:
-                    ownFriends.remove(users[otherUser]['email'])
-                    updateFriends = ', '.join(ownFriends)
-                    data = {'friends': updateFriends}
-                    firebase.patch(ownstoreEmail, data)
-                    otherFriends.remove(users[accountKey]['email'])
-                    updateOtherFriends = ', '.join(otherFriends)
-                    otherData = {'friends': updateOtherFriends}
-                    firebase.patch(storeEmail, otherData)
-                else:
-                    pass
-                    
+
     def press(self, instance):
         pass
 
