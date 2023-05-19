@@ -93,6 +93,9 @@ class MyApp(MDApp):
 
     def friendRequestScreen(self):
         self.root.current = 'friendRequests'
+    
+    def friendRemoveScreen(self):
+        self.root.current = 'removeFriend'
 
     def homeScreen(self):
         self.root.current = 'homepage'
