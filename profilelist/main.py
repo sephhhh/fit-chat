@@ -94,6 +94,9 @@ class MyApp(MDApp):
     def friendRequestScreen(self):
         self.root.current = 'friendRequests'
 
+    def friendRemoveScreen(self):
+        self.root.current = 'removeFriend'
+
     def homeScreen(self):
         self.root.current = 'homepage'
 
@@ -305,37 +308,74 @@ class MyApp(MDApp):
                 requestsListScreen.add_widget(img)
                 requestsListScreen.add_widget(btn)
 
+    def showRemoveList(self):
+        friendListScreen = self.root.ids.removeList
+        friendListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        friends = users[accountKey]['friends']
+        friendList = friends.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in friendList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                friendListScreen.add_widget(img)
+                friendListScreen.add_widget(btn)
 
-    def add(self, screen):
+    def add(self,screen):
+        friendemail = self.root.ids[screen].text
+        users = firebase.get('/Users', "")
+        ownEmail = users[accountKey]['email']
+        for user in users.keys():
+            if users[user]['email'] == friendemail:
+                otherUser = user
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownRequests = users[accountKey]['requests'].split(', ')
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherRequests = users[otherUser]['requests'].split(', ')
+                if users[otherUser]['email'] in ownRequests:
+                    ownRequests.remove(users[otherUser]['email'])
+                    updateRequest = ', '.join(ownRequests)
+                    data = {'requests' : updateRequest}
+                    firebase.patch(ownstoreEmail, data)
+                    addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
+                    data = {'friends' : addData}
+                    firebase.patch(ownstoreEmail, data)
+                    addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
+                    data = {'friends' : addotherData}
+                    firebase.patch(storeEmail, data)
+                elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
+                    pass
+                else:
+                    addData = users[otherUser]['requests'] + ', ' + ownEmail
+                    data = {'requests' : addData}
+                    firebase.patch(storeEmail,data)
+            else:
+                pass
+    def remove(self, screen):
         friendemail = self.root.ids[screen].text
         users = firebase.get('/Users', "")
         for user in users.keys():
             if users[user]['email'] == friendemail:
                 otherUser = user
-            elif user == accountKey:
-                ownEmail = users[user]['email']
-        storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
-        ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
-        ownRequests = users[accountKey]['requests'].split(', ')
-        ownFriends = users[accountKey]['friends'].split(', ')
-        otherRequests = users[otherUser]['requests'].split(', ')
-        if users[otherUser]['email'] in ownRequests:
-            ownRequests.remove(users[otherUser]['email'])
-            updateRequest = ', '.join(ownRequests)
-            data = {'requests' : updateRequest}
-            firebase.patch(ownstoreEmail, data)
-            addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
-            data = {'friends' : addData}
-            firebase.patch(ownstoreEmail, data)
-            addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
-            data = {'friends' : addotherData}
-            firebase.patch(storeEmail, data)
-        elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
-            pass
-        else:
-            addData = users[otherUser]['requests'] + ', ' + ownEmail
-            data = {'requests' : addData}
-            firebase.patch(storeEmail,data)
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherFriends = users[otherUser]['friends'].split(', ')
+                if users[otherUser]['email'] in ownFriends:
+                    ownFriends.remove(users[otherUser]['email'])
+                    updateFriends = ', '.join(ownFriends)
+                    data = {'friends': updateFriends}
+                    firebase.patch(ownstoreEmail, data)
+                    otherFriends.remove(users[accountKey]['email'])
+                    updateOtherFriends = ', '.join(otherFriends)
+                    otherData = {'friends': updateOtherFriends}
+                    firebase.patch(storeEmail, otherData)
+                else:
+                    pass                    
+
 
 
     def press(self, instance):
