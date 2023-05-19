@@ -289,6 +289,21 @@ class MyApp(MDApp):
                 friendListScreen.add_widget(img)
                 friendListScreen.add_widget(btn)
 
+    def showRemoveList(self):
+        friendListScreen = self.root.ids.removeList
+        friendListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        friends = users[accountKey]['friends']
+        friendList = friends.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in friendList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                friendListScreen.add_widget(img)
+                friendListScreen.add_widget(btn)
+
     def showRequests(self):
         requestsListScreen = self.root.ids.requests
         requestsListScreen.clear_widgets()
@@ -336,7 +351,28 @@ class MyApp(MDApp):
             data = {'requests' : addData}
             firebase.patch(storeEmail,data)
 
-
+    def remove(self, screen):
+        friendemail = self.root.ids[screen].text
+        users = firebase.get('/Users', "")
+        for user in users.keys():
+            if users[user]['email'] == friendemail:
+                otherUser = user
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherFriends = users[otherUser]['friends'].split(', ')
+                if users[otherUser]['email'] in ownFriends:
+                    ownFriends.remove(users[otherUser]['email'])
+                    updateFriends = ', '.join(ownFriends)
+                    data = {'friends': updateFriends}
+                    firebase.patch(ownstoreEmail, data)
+                    otherFriends.remove(users[accountKey]['email'])
+                    updateOtherFriends = ', '.join(otherFriends)
+                    otherData = {'friends': updateOtherFriends}
+                    firebase.patch(storeEmail, otherData)
+                else:
+                    pass
+                    
     def press(self, instance):
         pass
 
