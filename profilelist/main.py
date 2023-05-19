@@ -82,7 +82,8 @@ class MyApp(MDApp):
 
 
     def chatRoomScreenToggle(self, room, id):
-        self.root.current = room
+        self.root.ids.ChatList.text = ''
+        self.root.current = "Chatroom"
 
     def loginScreen(self):
         self.root.current = "createAccount"
@@ -119,6 +120,7 @@ class MyApp(MDApp):
                         global accountKey
                         accountKey = loginInfo
                         self.initializeProfile()
+                        break
                 else:
                     print("Invalid Password")
                     self.root.ids.login_message.text = "Invalid Password"
@@ -212,7 +214,6 @@ class MyApp(MDApp):
 
     def get_hist(self, chatroom):
         chatroomLink = "/" + chatroom
-        chatroomRoom = chatroom + "Chat"
         messages = firebase.get(chatroomLink, "")
         newMessages = ""
         for i in messages.keys():
@@ -222,19 +223,18 @@ class MyApp(MDApp):
             else:
                 email = messages[i]["Email"]
             newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
-        self.root.ids[chatroomRoom].text = newMessages
+        self.root.ids.ChatList.text = newMessages
 
     def send_data(self, chatroom):
         email = self.root.ids.email.text
         chatroomLink = "/" + chatroom
         chatroomText = chatroom + "MessageText"
-        chatroomRoom = chatroom + "Chat"
         data = {'Message': '',
                 'Email': email}
         message = self.root.ids[chatroomText].text
         data['Message'] = message
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
-        self.root.ids[chatroomRoom].text += "\n" + 'You said: \n' + message + "\n"
+        self.root.ids.ChatList.text += "\n" + 'You said: \n' + message + "\n"
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)

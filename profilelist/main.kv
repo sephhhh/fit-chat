@@ -503,7 +503,7 @@
                 text: "Go Back"
                 size_hint: 1, .1
     MDScreen:
-        name: 'Chat'
+        name: 'Chatroom'
         MDBoxLayout:
             spacing: '5dp'
             orientation: 'vertical'
@@ -516,132 +516,23 @@
                 size_hint: 1, .75
                 scroll_y: 0
                 MDLabel:
-                    id: ChatChat
+                    id: ChatList
                     text: ""
                     size_hint_y: None
                     size: self.texture_size
                     halign: 'left'
             MDTextField:
-                id: ChatMessageText
+                id: ChatroomMessageText
                 hint_text: "Enter message"
                 help_text_mode: "on_focus"
                 size_hint: 1,.12
                 width: 300
                 mode: "rectangle"
             MDRectangleFlatButton:
+                id: sendMessageButton
                 text: 'Send message'
                 halign: 'center'
-                on_press: app.send_data("Chat")
-                size_hint: 1,.1
-                background_color: 51/255,153/255,255/255,
-            MDRectangleFlatButton:
-                on_press: app.homeScreenCamera()
-                text: "Go Back"
-                size_hint: 1, .1
-    MDScreen:
-        name: 'Basketball'
-        MDBoxLayout:
-            spacing: '5dp'
-            orientation: 'vertical'
-            MDRectangleFlatButton:
-                text: 'Show Chat History'
-                on_press: app.get_hist("Basketball")
-                size_hint: 1,.05
-                background_color: 51/255,153/255,255/255,
-            ScrollView:
-                size_hint: 1, .75
-                scroll_y: 0
-                MDLabel: #wher error is
-                    id: BasketballChat
-                    text: ""
-                    size_hint_y: None
-                    size: self.texture_size
-                    halign: 'left'
-            MDTextField:
-                id: BasketballMessageText
-                hint_text: "Enter message"
-                help_text_mode: "on_focus"
-                size_hint: 1,.12
-                width: 300
-                mode: "rectangle"
-            MDRectangleFlatButton:
-                text: 'Send message'
-                halign: 'center'
-                on_press: app.send_data("Basketball")
-                size_hint: 1,.1
-                background_color: 51/255,153/255,255/255,
-            MDRectangleFlatButton:
-                on_press: app.homeScreenCamera()
-                text: "Go Back"
-                size_hint: 1, .1
-
-    MDScreen:
-        name: 'Track'
-        MDBoxLayout:
-            spacing: '5dp'
-            orientation: 'vertical'
-            MDRectangleFlatButton:
-                text: 'Show Chat History'
-                on_press: app.get_hist("Track")
-                size_hint: 1,.05
-                background_color: 51/255,153/255,255/255,
-            ScrollView:
-                size_hint: 1, .75
-                scroll_y: 0
-                MDLabel:
-                    id: TrackChat
-                    text: ""
-                    size_hint_y: None
-                    size: self.texture_size
-                    halign: 'left'
-            MDTextField:
-                id: TrackMessageText
-                hint_text: "Enter message"
-                help_text_mode: "on_focus"
-                size_hint: 1,.12
-                width: 300
-                mode: "rectangle"
-            MDRectangleFlatButton:
-                text: 'Send message'
-                halign: 'center'
-                on_press: app.send_data("Track")
-                size_hint: 1,.1
-                background_color: 51/255,153/255,255/255,
-            MDRectangleFlatButton:
-                on_press: app.homeScreenCamera()
-                text: "Go Back"
-                size_hint: 1, .1
-
-    MDScreen:
-        name: 'Soccer'
-        MDBoxLayout:
-            spacing: '5dp'
-            orientation: 'vertical'
-            MDRectangleFlatButton:
-                text: 'Show Chat History'
-                on_press: app.get_hist("Soccer")
-                size_hint: 1,.05
-                background_color: 51/255,153/255,255/255,
-            ScrollView:
-                size_hint: 1, .75
-                scroll_y: 0
-                MDLabel:
-                    id: SoccerChat
-                    text: ""
-                    size_hint_y: None
-                    size: self.texture_size
-                    halign: 'left'
-            MDTextField:
-                id: SoccerMessageText
-                hint_text: "Enter message"
-                help_text_mode: "on_focus"
-                size_hint: 1,.12
-                width: 300
-                mode: "rectangle"
-            MDRectangleFlatButton:
-                text: 'Send message'
-                halign: 'center'
-                on_press: app.send_data("Soccer")
+                on_press: app.send_data("Chatroom")
                 size_hint: 1,.1
                 background_color: 51/255,153/255,255/255,
             MDRectangleFlatButton:
