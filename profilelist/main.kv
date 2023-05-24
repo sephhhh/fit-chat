@@ -410,6 +410,10 @@
         MDBoxLayout:
             orientation: 'vertical'
             MDRectangleFlatButton:
+                size_hint: 1.1, .1
+                text: 'Show Recommended'
+                on_press: app.showRecommended()
+            MDRectangleFlatButton:
                 size_hint: 1, .1
                 text: 'Show Users'
                 on_press: app.createProfileList()
@@ -478,7 +482,7 @@
                 text: "Go Back"
                 size_hint: 1, .1
                 background_color: 51/255,153/255,255/255,
-        MDScreen:
+    MDScreen:
         name: 'removeFriend'
         MDBoxLayout:
             orientation: 'vertical'
@@ -579,3 +583,5 @@
                 on_press: app.homeScreenCamera()
                 text: "Go Back"
                 size_hint: 1, .1
+
+
