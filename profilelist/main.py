@@ -13,7 +13,6 @@ from kivy.uix.button import ButtonBehavior, Button
 from kivy.uix.image import Image
 from functools import partial
 import webbrowser
-
 from kivymd.uix.button import MDRectangleFlatButton
 
 Window.size = (350, 700)
@@ -67,20 +66,19 @@ class MyApp(MDApp):
         chatRoomScreen = self.root.ids.chatRooms
         chatRoomScreen.clear_widgets()
 
-        sport.strip()
-        sport = sport[1:len(sport) - 1]
         sportList = sport.split(', ')
-
+        sportList.pop(len(sportList)-1)
         publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, "Chatroom"))
         chatRoomScreen.add_widget(publicRoom)
 
         for sports in sportList:
-            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, sports))
+            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, sports.strip(' ')))
             chatRoomScreen.add_widget(chatRooms)
         
-        personalChats = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com', "")
+        personalChats = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', "")
         for ids in personalChats.keys():
             idList = personalChats[ids]['ID'].split(', ')
+            print(idList)
             if accInfo[accountKey]['email'] in idList:
                 chatID = ids
                 idList.remove(accInfo[accountKey]['email'])
@@ -265,13 +263,13 @@ class MyApp(MDApp):
             MyApp.checks.append(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}" + ","
+                sports = f"{sports} {i}" + ", "
             self.root.ids.sports_label.text = f"{sports}"
         else:
             MyApp.checks.remove(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}" + ","
+                sports = f"{sports} {i}" + ", "
             self.root.ids.sports_label.text = f"{sports}"
 
     def privacy_policy(instance):
@@ -294,11 +292,17 @@ class MyApp(MDApp):
                     othersportslist = othersports.split(', ')
                     for i in sportslist:
                         for o in othersportslist:
-                            if i == o:
-                                img = Image(source = users[user]['profilePicture'])
-                                btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
-                                profilelist.add_widget(img)
-                                profilelist.add_widget(btn)
+                            count = 0
+                            if i == o and i !='':
+                                count += 1
+                                matchlist = []
+                                matchlist.append((user, count)) 
+        matchlist.sort(reverse=True)
+        for user in matchlist:
+            img = Image(source = users[user[0]]['profilePicture'])
+            btn = Button(text = 'User: ' + str(users[user[0]]['name'] + '\nEmail: ' + users[user[0]]['email'] + '\nInterest: ' + users[user[0]]['sports']), on_press = self.press)
+            profilelist.add_widget(img)
+            profilelist.add_widget(btn)
 
     def createProfileList(self):
         profilelist = self.root.ids.profileListing
@@ -382,7 +386,7 @@ class MyApp(MDApp):
                     firebase.patch(storeEmail, data)
                     chatData = users[accountKey]['email'] + ', ' + users[otherUser]['email']
                     data = {'ID' : chatData}
-                    firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com', data)
+                    firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', data)
                 elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
                     pass
                 else:
