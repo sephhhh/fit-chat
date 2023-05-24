@@ -77,7 +77,20 @@ class MyApp(MDApp):
         for sports in sportList:
             chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, sports))
             chatRoomScreen.add_widget(chatRooms)
-
+        
+        personalChats = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com', "")
+        for ids in personalChats.keys():
+            idList = personalChats[ids]['ID'].split(', ')
+            if accInfo[accountKey]['email'] in idList:
+                chatID = ids
+                idList.remove(accInfo[accountKey]['email'])
+                users = firebase.get('/Users', '')
+                for user in users.keys():
+                        if users[user]['email'] in idList:
+                            buttonName = users[user]['name']
+                personalRooms = MDRectangleFlatButton(text=buttonName, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, chatID))
+                chatRoomScreen.add_widget(personalRooms)
+                
         print(sportList)
     def chatRoomScreenToggle(self, room, id):
         self.root.ids.ChatList.text = ''
@@ -220,12 +233,15 @@ class MyApp(MDApp):
         messages = firebase.get(chatroomLink, "")
         newMessages = ""
         for i in messages.keys():
-            email = self.root.ids.email.text
-            if messages[i]["Email"] == email:
-                email = 'You'
-            else:
-                email = messages[i]["Email"]
-            newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
+            try:
+                email = self.root.ids.email.text
+                if messages[i]["Email"] == email:
+                    email = 'You'
+                else:
+                    email = messages[i]["Email"]
+                newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
+            except:
+                pass
         self.root.ids.ChatList.text = newMessages
 
     def send_data(self, chatroom):
@@ -265,6 +281,24 @@ class MyApp(MDApp):
         super().__init__(**kwargs)
 
         self.list_of_btns = []
+    
+    def showRecommended(self):
+        profilelist = self.root.ids.profileListing
+        profilelist.clear_widgets()
+        users = firebase.get('/Users', '')
+        for user in users.keys():
+            sports = users[accountKey]['sports']
+            sportslist = sports.split(', ')
+            if user != accountKey:
+                    othersports = users[user]['sports']
+                    othersportslist = othersports.split(', ')
+                    for i in sportslist:
+                        for o in othersportslist:
+                            if i == o:
+                                img = Image(source = users[user]['profilePicture'])
+                                btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
+                                profilelist.add_widget(img)
+                                profilelist.add_widget(btn)
 
     def createProfileList(self):
         profilelist = self.root.ids.profileListing
@@ -346,6 +380,9 @@ class MyApp(MDApp):
                     addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
                     data = {'friends' : addotherData}
                     firebase.patch(storeEmail, data)
+                    chatData = users[accountKey]['email'] + ', ' + users[otherUser]['email']
+                    data = {'ID' : chatData}
+                    firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com', data)
                 elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
                     pass
                 else:
