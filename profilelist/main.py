@@ -62,19 +62,21 @@ class MyApp(MDApp):
         sport = accInfo[accountKey]['sports']
         self.root.ids.sport_label.text = "Selected Interests: " + str(sport[0:len(sport) - 1])
 
-        #displays chatrooms depending on interests
+        # displays chatrooms depending on interests
         chatRoomScreen = self.root.ids.chatRooms
         chatRoomScreen.clear_widgets()
 
         sportList = sport.split(', ')
-        sportList.pop(len(sportList)-1)
-        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, "Chatroom"))
+        sportList.pop(len(sportList) - 1)
+        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1),
+                                           on_release=partial(self.chatRoomScreenToggle, "Chatroom", "public"))
         chatRoomScreen.add_widget(publicRoom)
 
         for sports in sportList:
-            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, sports.strip(' ')))
+            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1),
+                                              on_release=partial(self.chatRoomScreenToggle, sports.strip(' '), "public"))
             chatRoomScreen.add_widget(chatRooms)
-        
+
         personalChats = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', "")
         for ids in personalChats.keys():
             idList = personalChats[ids]['ID'].split(', ')
@@ -84,16 +86,18 @@ class MyApp(MDApp):
                 idList.remove(accInfo[accountKey]['email'])
                 users = firebase.get('/Users', '')
                 for user in users.keys():
-                        if users[user]['email'] in idList:
-                            buttonName = users[user]['name']
-                personalRooms = MDRectangleFlatButton(text=buttonName, size_hint=(1, .1), on_release=partial(self.chatRoomScreenToggle, chatID))
+                    if users[user]['email'] in idList:
+                        buttonName = users[user]['name']
+                personalRooms = MDRectangleFlatButton(text=buttonName, size_hint=(1, .1),
+                                                      on_release=partial(self.chatRoomScreenToggle, chatID, "private"))
                 chatRoomScreen.add_widget(personalRooms)
-                
+
         print(sportList)
-    def chatRoomScreenToggle(self, room, id):
+
+    def chatRoomScreenToggle(self, room, type, id):
         self.root.ids.ChatList.text = ''
-        self.root.ids.sendMessageButton.on_press = partial(self.send_data, room)
-        self.root.ids.chatHistoryButton.on_press = partial(self.get_hist, room)
+        self.root.ids.sendMessageButton.on_press = partial(self.send_data, room, type)
+        self.root.ids.chatHistoryButton.on_press = partial(self.get_hist, room, type)
         self.root.current = "Chatroom"
 
     def loginScreen(self):
@@ -213,7 +217,7 @@ class MyApp(MDApp):
             'profilePicture': profilePicture,
             'bio': bio,
             'name': name,
-            'sports' : sports,
+            'sports': sports,
         }
 
         accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
@@ -226,9 +230,13 @@ class MyApp(MDApp):
     firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
     global accountKey
 
-    def get_hist(self, chatroom):
+    def get_hist(self, chatroom, type):
         chatroomLink = "/" + chatroom
-        messages = firebase.get(chatroomLink, "")
+        if type.lower() == "public":
+            messages = firebase.get(chatroomLink, "")
+        else:
+            chatroomLink = "/PrivateChats/" + chatroom
+            messages = firebase.get(chatroomLink, "")
         newMessages = ""
         for i in messages.keys():
             try:
@@ -242,7 +250,7 @@ class MyApp(MDApp):
                 pass
         self.root.ids.ChatList.text = newMessages
 
-    def send_data(self, chatroom):
+    def send_data(self, chatroom, type):
         email = self.root.ids.email.text
         chatroomLink = "/" + chatroom
         chatroomText = "ChatroomMessageText"
@@ -250,7 +258,10 @@ class MyApp(MDApp):
                 'Email': email}
         message = self.root.ids[chatroomText].text
         data['Message'] = message
-        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
+        if type == "public":
+            firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
+        else:
+            firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats' + chatroomLink, data)
         self.root.ids.ChatList.text += "\n" + 'You said: \n' + message + "\n"
         self.root.ids[chatroomText].text = ''
 
@@ -279,7 +290,7 @@ class MyApp(MDApp):
         super().__init__(**kwargs)
 
         self.list_of_btns = []
-    
+
     def showRecommended(self):
         profilelist = self.root.ids.profileListing
         profilelist.clear_widgets()
@@ -288,31 +299,35 @@ class MyApp(MDApp):
             sports = users[accountKey]['sports']
             sportslist = sports.split(', ')
             if user != accountKey:
-                    othersports = users[user]['sports']
-                    othersportslist = othersports.split(', ')
-                    for i in sportslist:
-                        for o in othersportslist:
-                            count = 0
-                            if i == o and i !='':
-                                count += 1
-                                matchlist = []
-                                matchlist.append((user, count)) 
+                othersports = users[user]['sports']
+                othersportslist = othersports.split(', ')
+                for i in sportslist:
+                    for o in othersportslist:
+                        count = 0
+                        if i == o and i != '':
+                            count += 1
+                            matchlist = []
+                            matchlist.append((user, count))
         matchlist.sort(reverse=True)
         for user in matchlist:
-            img = Image(source = users[user[0]]['profilePicture'])
-            btn = Button(text = 'User: ' + str(users[user[0]]['name'] + '\nEmail: ' + users[user[0]]['email'] + '\nInterest: ' + users[user[0]]['sports']), on_press = self.press)
+            img = Image(source=users[user[0]]['profilePicture'])
+            btn = Button(text='User: ' + str(
+                users[user[0]]['name'] + '\nEmail: ' + users[user[0]]['email'] + '\nInterest: ' + users[user[0]][
+                    'sports']), on_press=self.press)
             profilelist.add_widget(img)
             profilelist.add_widget(btn)
 
     def createProfileList(self):
         profilelist = self.root.ids.profileListing
         profilelist.clear_widgets()
-        #avatar_grid = self.root.ids.avatar_grid
+        # avatar_grid = self.root.ids.avatar_grid
         users = firebase.get('/Users', '')
         for user in users.keys():
             if user != accountKey:
-                img = Image(source = users[user]['profilePicture'])
-                btn = Button(text = 'User: ' + str(users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']), on_press = self.press)
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
                 profilelist.add_widget(img)
                 profilelist.add_widget(btn)
 
@@ -361,7 +376,7 @@ class MyApp(MDApp):
                 friendListScreen.add_widget(img)
                 friendListScreen.add_widget(btn)
 
-    def add(self,screen):
+    def add(self, screen):
         friendemail = self.root.ids[screen].text
         users = firebase.get('/Users', "")
         ownEmail = users[accountKey]['email']
@@ -376,25 +391,26 @@ class MyApp(MDApp):
                 if users[otherUser]['email'] in ownRequests:
                     ownRequests.remove(users[otherUser]['email'])
                     updateRequest = ', '.join(ownRequests)
-                    data = {'requests' : updateRequest}
+                    data = {'requests': updateRequest}
                     firebase.patch(ownstoreEmail, data)
                     addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
-                    data = {'friends' : addData}
+                    data = {'friends': addData}
                     firebase.patch(ownstoreEmail, data)
                     addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
-                    data = {'friends' : addotherData}
+                    data = {'friends': addotherData}
                     firebase.patch(storeEmail, data)
                     chatData = users[accountKey]['email'] + ', ' + users[otherUser]['email']
-                    data = {'ID' : chatData}
+                    data = {'ID': chatData}
                     firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', data)
                 elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
                     pass
                 else:
                     addData = users[otherUser]['requests'] + ', ' + ownEmail
-                    data = {'requests' : addData}
-                    firebase.patch(storeEmail,data)
+                    data = {'requests': addData}
+                    firebase.patch(storeEmail, data)
             else:
                 pass
+
     def remove(self, screen):
         friendemail = self.root.ids[screen].text
         users = firebase.get('/Users', "")
@@ -415,12 +431,11 @@ class MyApp(MDApp):
                     otherData = {'friends': updateOtherFriends}
                     firebase.patch(storeEmail, otherData)
                 else:
-                    pass                    
-
-
+                    pass
 
     def press(self, instance):
         pass
+
 
 if __name__ == '__main__':
     MyApp().run()

@@ -518,7 +518,7 @@
                 text: "Go Back"
                 size_hint: 1, .1
                 background_color: 51/255,153/255,255/255,
-                
+
     MDScreen:
         name: 'camera'
         orientation: 'vertical'
@@ -553,7 +553,7 @@
             MDRectangleFlatButton:
                 id: chatHistoryButton
                 text: 'Show Chat History'
-                on_press: app.get_hist("Chat")
+                on_press: app.get_hist("Chat", "public")
                 size_hint: 1,.05
                 background_color: 51/255,153/255,255/255,
             ScrollView:
