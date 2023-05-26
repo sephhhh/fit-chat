@@ -256,7 +256,7 @@
                             MDCheckbox:
                                 size_hint: None, None
                                 size: "48dp", "48dp"
-                                pos_hint: {'center_x': .5, 'center_y': .8}
+                                pos_hint: {'center_x': .4, 'center_y': .8}
                                 on_active: app.check(self, self.active, "Track")
                             MDLabel:
                                 text: "Soccer"
@@ -268,11 +268,11 @@
                             MDCheckbox:
                                 size_hint: None, None
                                 size: "48dp", "48dp"
-                                pos_hint: {'center_x': .5, 'center_y': .7}
+                                pos_hint: {'center_x': .4, 'center_y': .7}
                                 on_active: app.check(self, self.active, "Soccer")
                             MDLabel:
                                 text: "Basketball"
-                                font_size:20
+                                font_size:20    
                                 bold: True
                                 pos_hint: {"center_x": .55, "center_y": .6}
                                 theme_text_color: "Custom"
@@ -280,8 +280,68 @@
                             MDCheckbox:
                                 size_hint: None, None
                                 size: "48dp", "48dp"
-                                pos_hint: {'center_x': .5, 'center_y': .6}
+                                pos_hint: {'center_x': .4, 'center_y': .6}
                                 on_active: app.check(self, self.active, "Basketball")
+                            MDLabel:
+                                text: "Hiking"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .5}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .4, 'center_y': .5}
+                                on_active: app.check(self, self.active, "Hiking")
+                            MDLabel:
+                                text: "Baseball"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .55, "center_y": .4}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .4, 'center_y': .4}
+                                on_active: app.check(self, self.active, "Baseball")
+                            MDLabel:
+                                text: "Football"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .99, "center_y": .6}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .85, 'center_y': .6}
+                                on_active: app.check(self, self.active, "Football")
+                            MDLabel:
+                                text: "Volleyball"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .99, "center_y": .7}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .85, 'center_y': .7}
+                                on_active: app.check(self, self.active, "Volleyball")
+                            MDLabel:
+                                text: "Golf"
+                                font_size:20
+                                bold: True
+                                pos_hint: {"center_x": .99, "center_y": .8}
+                                theme_text_color: "Custom"
+                                text_color: 63/255, 63/255, 191/255, 1
+                            MDCheckbox:
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {'center_x': .85, 'center_y': .8}
+                                on_active: app.check(self, self.active, "Golf")
                         MDRectangleFlatButton:
                             text: 'Submit Sport(s)'
                             pos_hint: {'center_x':0.5, 'center_y': 0.1}
