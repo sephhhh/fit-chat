@@ -325,6 +325,36 @@
                                 MDRectangleFlatButton:
                                     on_press: app.friendRemoveScreen()
                                     text: "Remove Friends"
+                MDBottomNavigationItem:
+                    name: "screen 6"
+                    id: mapview
+                    text: "Map"
+                    icon: 'account-cog'
+                    MDScreen:
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MapView:
+                                id: main_map
+                                lat: 39.952583
+                                lon: -75.165222
+                                zoom: 17
+                                double_tap_zoom: True
+                            MDTextField:
+                                id: latitude
+                                hint_text: "Latitude"
+                                helper_text: "Enter a valid latitude"
+                                helper_text_mode: "persistent"
+                            MDTextField:
+                                id: longitude
+                                hint_text: "Longitude"
+                                helper_text: "Enter a valid longitude"
+                                helper_text_mode: "persistent"
+                            MDRectangleFlatButton:
+                                text: 'Submit Location'
+                                pos_hint: {'center_x':0.5, 'center_y': 0.1}
+                                on_press: app.update_map_center()
+                                size_hint: .3,.05
+                                background_color: 51/255,153/255,255/255,1
 
     MDScreen:
         name: "change_avatar"
