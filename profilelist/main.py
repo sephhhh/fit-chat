@@ -14,6 +14,8 @@ from kivy.uix.image import Image
 from functools import partial
 import webbrowser
 from kivymd.uix.button import MDRectangleFlatButton
+from kivy_garden.mapview import MapView, MapMarkerPopup, MapMarker
+
 
 Window.size = (350, 700)
 
