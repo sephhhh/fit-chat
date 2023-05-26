@@ -31,6 +31,14 @@ class MyApp(MDApp):
         self.theme_cls.theme_style = 'Light'
         Builder.load_file('main.kv')
         return MainScreenManager()
+    
+    def update_map_center(self):
+        try:
+            longitude = float(self.root.ids.longitude.text)
+            latitude = float(self.root.ids.latitude.text)
+            self.root.ids.main_map.center_on(latitude, longitude)
+        except ValueError:
+            pass
 
     def capture(self):
         '''
