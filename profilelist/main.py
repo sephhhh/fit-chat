@@ -295,25 +295,25 @@ class MyApp(MDApp):
         profilelist = self.root.ids.profileListing
         profilelist.clear_widgets()
         users = firebase.get('/Users', '')
+        userInterests = users[accountKey]['sports'].split(', ')
+        matchInterests = []
+        matchedUsers = []
         for user in users.keys():
-            sports = users[accountKey]['sports']
-            sportslist = sports.split(', ')
             if user != accountKey:
-                othersports = users[user]['sports']
-                othersportslist = othersports.split(', ')
-                for i in sportslist:
-                    for o in othersportslist:
-                        count = 0
-                        if i == o and i != '':
-                            count += 1
-                            matchlist = []
-                            matchlist.append((user, count))
-        matchlist.sort(reverse=True)
-        for user in matchlist:
-            img = Image(source=users[user[0]]['profilePicture'])
-            btn = Button(text='User: ' + str(
-                users[user[0]]['name'] + '\nEmail: ' + users[user[0]]['email'] + '\nInterest: ' + users[user[0]][
-                    'sports']), on_press=self.press)
+                matchInterests = users[user]['sports'].split(', ')
+                matchingScore = 0
+                for interests in userInterests:
+                    if (interests in matchInterests) and (interests != ''):
+                        matchingScore += 1
+                if matchingScore >= 1:
+                    matchedUsers.append((matchingScore, user)) 
+                    matchingScore = 0
+
+        matchedUsers.sort(reverse=True)
+        print(matchedUsers)
+        for user in matchedUsers:
+            img = Image(source = users[user[1]]['profilePicture'])
+            btn = Button(text = 'User: ' + str(users[user[1]]['name'] + '\nEmail: ' + users[user[1]]['email'] + '\nInterest: ' + users[user[1]]['sports']), on_press = self.press)
             profilelist.add_widget(img)
             profilelist.add_widget(btn)
 
