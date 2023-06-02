@@ -7,12 +7,15 @@ from firebase import firebase
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import json
 from os import walk
 import time
-from kivy.uix.button import ButtonBehavior
+from kivy.uix.button import ButtonBehavior, Button
 from kivy.uix.image import Image
 from functools import partial
+import webbrowser
+from kivymd.uix.button import MDRectangleFlatButton
+from kivy_garden.mapview import MapView, MapMarkerPopup, MapMarker
+
 
 Window.size = (350, 700)
 
@@ -30,6 +33,14 @@ class MyApp(MDApp):
         self.theme_cls.theme_style = 'Light'
         Builder.load_file('main.kv')
         return MainScreenManager()
+    
+    def update_map_center(self):
+        try:
+            longitude = float(self.root.ids.longitude.text)
+            latitude = float(self.root.ids.latitude.text)
+            self.root.ids.main_map.center_on(latitude, longitude)
+        except ValueError:
+            pass
 
     def capture(self):
         '''
@@ -47,6 +58,7 @@ class MyApp(MDApp):
         self.root.current = 'camera'
 
     def initializeProfile(self):  # function to initialize profile after successful login
+        self.root.ids.camera.play = False
         accInfo = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', '')
         name = accInfo[accountKey]['name']
         self.root.ids.name.text = name
@@ -57,11 +69,68 @@ class MyApp(MDApp):
         profile = accInfo[accountKey]['profilePicture']
         self.root.ids.profile_picture.source = profile
 
-        sport = accInfo[accountKey]['sportSelection']
-        self.root.ids.sport_selectcion.source = sport
+        sport = accInfo[accountKey]['sports']
+        self.root.ids.sport_label.text = "Selected Interests: " + str(sport[0:len(sport) - 1])
+
+        # displays chatrooms depending on interests
+        chatRoomScreen = self.root.ids.chatRooms
+        chatRoomScreen.clear_widgets()
+
+        sportList = sport.split(', ')
+        sportList.pop(len(sportList) - 1)
+        publicRoom = MDRectangleFlatButton(text="Public Chatroom", size_hint=(1, .1),
+                                           on_release=partial(self.chatRoomScreenToggle, "Chatroom", "public"))
+        chatRoomScreen.add_widget(publicRoom)
+
+        for sports in sportList:
+            chatRooms = MDRectangleFlatButton(text=sports, size_hint=(1, .1),
+                                              on_release=partial(self.chatRoomScreenToggle, sports.strip(' '), "public"))
+            chatRoomScreen.add_widget(chatRooms)
+
+        personalChats = firebase.get('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', "")
+        for ids in personalChats.keys():
+            idList = personalChats[ids]['ID'].split(', ')
+            print(idList)
+            if accInfo[accountKey]['email'] in idList:
+                chatID = ids
+                idList.remove(accInfo[accountKey]['email'])
+                users = firebase.get('/Users', '')
+                for user in users.keys():
+                    if users[user]['email'] in idList:
+                        buttonName = users[user]['name']
+                personalRooms = MDRectangleFlatButton(text=buttonName, size_hint=(1, .1),
+                                                      on_release=partial(self.chatRoomScreenToggle, chatID, "private"))
+                chatRoomScreen.add_widget(personalRooms)
+
+        print(sportList)
+
+    def chatRoomScreenToggle(self, room, type, id):
+        self.root.ids.ChatList.text = ''
+        self.root.ids.sendMessageButton.on_press = partial(self.send_data, room, type)
+        self.root.ids.chatHistoryButton.on_press = partial(self.get_hist, room, type)
+        self.root.current = "Chatroom"
 
     def loginScreen(self):
         self.root.current = "createAccount"
+
+    def profileListScreen(self):
+        self.root.current = 'profileList'
+
+    def friendRequestScreen(self):
+        self.root.current = 'friendRequests'
+
+    def friendRemoveScreen(self):
+        self.root.current = 'removeFriend'
+
+    def homeScreen(self):
+        self.root.current = 'homepage'
+
+    def homeScreenCamera(self):
+        self.root.ids.camera.play = False
+        self.root.current = 'homepage'
+
+    def backToLoginScreen(self):
+        self.root.current = 'login'
 
     def get_data(self):  # function for submit button
         email = self.root.ids.email.text
@@ -79,6 +148,7 @@ class MyApp(MDApp):
                         global accountKey
                         accountKey = loginInfo
                         self.initializeProfile()
+                        break
                 else:
                     print("Invalid Password")
                     self.root.ids.login_message.text = "Invalid Password"
@@ -96,6 +166,9 @@ class MyApp(MDApp):
             'profilePicture': 'fitChatAvatars/defaultAvatar.png',
             'bio': bio,
             'name': name,
+            'sports': "",
+            'requests': '',
+            'friends': '',
         }
         firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Users', data)
         self.root.current = 'login'
@@ -146,6 +219,7 @@ class MyApp(MDApp):
         bio = self.root.ids.biography.text
         name = self.root.ids.name.text
         profilePicture = "fitChatAvatars/" + image
+        sports = self.root.ids.sports_label.text
 
         data = {
             'email': email,
@@ -153,6 +227,7 @@ class MyApp(MDApp):
             'profilePicture': profilePicture,
             'bio': bio,
             'name': name,
+            'sports': sports,
         }
 
         accountLink = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
@@ -165,21 +240,40 @@ class MyApp(MDApp):
     firebase = firebase.FirebaseApplication('https://fitchat-d7a73-default-rtdb.firebaseio.com/', None)
     global accountKey
 
-    def get_hist(self):
-        messages = firebase.get('/Chat', "")
+    def get_hist(self, chatroom, type):
+        chatroomLink = "/" + chatroom
+        if type.lower() == "public":
+            messages = firebase.get(chatroomLink, "")
+        else:
+            chatroomLink = "/PrivateChats/" + chatroom
+            messages = firebase.get(chatroomLink, "")
         newMessages = ""
         for i in messages.keys():
-            newMessages = newMessages + "\n" + (messages[i]["Email"]) + ' said: ' + (messages[i]["Message"])
-        self.root.ids.Chat.text = newMessages
+            try:
+                email = self.root.ids.email.text
+                if messages[i]["Email"] == email:
+                    email = 'You'
+                else:
+                    email = messages[i]["Email"]
+                newMessages = newMessages + "\n" + (email) + ' said: \n' + (messages[i]["Message"] + '\n')
+            except:
+                pass
+        self.root.ids.ChatList.text = newMessages
 
-    def send_data(self):
+    def send_data(self, chatroom, type):
         email = self.root.ids.email.text
+        chatroomLink = "/" + chatroom
+        chatroomText = "ChatroomMessageText"
         data = {'Message': '',
                 'Email': email}
-        message = self.root.ids.message.text
+        message = self.root.ids[chatroomText].text
         data['Message'] = message
-        firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/Chat', data)
-        self.root.ids.Chat.text += "\n" + email + ' said: ' + message
+        if type == "public":
+            firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/' + chatroomLink, data)
+        else:
+            firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats' + chatroomLink, data)
+        self.root.ids.ChatList.text += "\n" + 'You said: \n' + message + "\n"
+        self.root.ids[chatroomText].text = ''
 
     cred = credentials.Certificate('fitchat-d7a73-firebase-adminsdk-ybqmf-e4babd672a.json')
     firebase_admin.initialize_app(cred)
@@ -190,14 +284,167 @@ class MyApp(MDApp):
             MyApp.checks.append(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ", "
             self.root.ids.sports_label.text = f"{sports}"
         else:
             MyApp.checks.remove(sport)
             sports = ""
             for i in MyApp.checks:
-                sports = f"{sports} {i}"
+                sports = f"{sports} {i}" + ", "
             self.root.ids.sports_label.text = f"{sports}"
+
+    def privacy_policy(instance):
+        webbrowser.open("https://www.freeprivacypolicy.com/live/e80d9fa1-6aba-4479-bd20-f4a73d129eaf/")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.list_of_btns = []
+
+    def showRecommended(self):
+        profilelist = self.root.ids.profileListing
+        profilelist.clear_widgets()
+        users = firebase.get('/Users', '')
+        userInterests = users[accountKey]['sports'].split(', ')
+        matchInterests = []
+        matchedUsers = []
+        for user in users.keys():
+            if user != accountKey:
+                matchInterests = users[user]['sports'].split(', ')
+                matchingScore = 0
+                for interests in userInterests:
+                    if (interests in matchInterests) and (interests != ''):
+                        matchingScore += 1
+                if matchingScore >= 1:
+                    matchedUsers.append((matchingScore, user)) 
+                    matchingScore = 0
+
+        matchedUsers.sort(reverse=True)
+        print(matchedUsers)
+        for user in matchedUsers:
+            img = Image(source = users[user[1]]['profilePicture'])
+            btn = Button(text = 'User: ' + str(users[user[1]]['name'] + '\nEmail: ' + users[user[1]]['email'] + '\nInterest: ' + users[user[1]]['sports']), on_press = self.press)
+            profilelist.add_widget(img)
+            profilelist.add_widget(btn)
+
+    def createProfileList(self):
+        profilelist = self.root.ids.profileListing
+        profilelist.clear_widgets()
+        # avatar_grid = self.root.ids.avatar_grid
+        users = firebase.get('/Users', '')
+        for user in users.keys():
+            if user != accountKey:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                profilelist.add_widget(img)
+                profilelist.add_widget(btn)
+
+    def showFriendList(self):
+        friendListScreen = self.root.ids.friendList
+        friendListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        friends = users[accountKey]['friends']
+        friendList = friends.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in friendList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                friendListScreen.add_widget(img)
+                friendListScreen.add_widget(btn)
+
+    def showRequests(self):
+        requestsListScreen = self.root.ids.requests
+        requestsListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        requests = users[accountKey]['requests']
+        requestsList = requests.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in requestsList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                requestsListScreen.add_widget(img)
+                requestsListScreen.add_widget(btn)
+
+    def showRemoveList(self):
+        friendListScreen = self.root.ids.removeList
+        friendListScreen.clear_widgets()
+        users = firebase.get('/Users', '')
+        friends = users[accountKey]['friends']
+        friendList = friends.split(', ')
+        for user in users.keys():
+            if users[user]['email'] in friendList:
+                img = Image(source=users[user]['profilePicture'])
+                btn = Button(text='User: ' + str(
+                    users[user]['name'] + '\nEmail: ' + users[user]['email'] + '\nInterest: ' + users[user]['sports']),
+                             on_press=self.press)
+                friendListScreen.add_widget(img)
+                friendListScreen.add_widget(btn)
+
+    def add(self, screen):
+        friendemail = self.root.ids[screen].text
+        users = firebase.get('/Users', "")
+        ownEmail = users[accountKey]['email']
+        for user in users.keys():
+            if users[user]['email'] == friendemail:
+                otherUser = user
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownRequests = users[accountKey]['requests'].split(', ')
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherRequests = users[otherUser]['requests'].split(', ')
+                if users[otherUser]['email'] in ownRequests:
+                    ownRequests.remove(users[otherUser]['email'])
+                    updateRequest = ', '.join(ownRequests)
+                    data = {'requests': updateRequest}
+                    firebase.patch(ownstoreEmail, data)
+                    addData = users[accountKey]['friends'] + ', ' + users[otherUser]['email']
+                    data = {'friends': addData}
+                    firebase.patch(ownstoreEmail, data)
+                    addotherData = users[otherUser]['friends'] + ', ' + users[accountKey]['email']
+                    data = {'friends': addotherData}
+                    firebase.patch(storeEmail, data)
+                    chatData = users[accountKey]['email'] + ', ' + users[otherUser]['email']
+                    data = {'ID': chatData}
+                    firebase.post('https://fitchat-d7a73-default-rtdb.firebaseio.com/PrivateChats', data)
+                elif (users[accountKey]['email'] in otherRequests) or (users[otherUser]['email'] in ownFriends):
+                    pass
+                else:
+                    addData = users[otherUser]['requests'] + ', ' + ownEmail
+                    data = {'requests': addData}
+                    firebase.patch(storeEmail, data)
+            else:
+                pass
+
+    def remove(self, screen):
+        friendemail = self.root.ids[screen].text
+        users = firebase.get('/Users', "")
+        for user in users.keys():
+            if users[user]['email'] == friendemail:
+                otherUser = user
+                storeEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + otherUser
+                ownstoreEmail = 'https://fitchat-d7a73-default-rtdb.firebaseio.com/Users/' + accountKey
+                ownFriends = users[accountKey]['friends'].split(', ')
+                otherFriends = users[otherUser]['friends'].split(', ')
+                if users[otherUser]['email'] in ownFriends:
+                    ownFriends.remove(users[otherUser]['email'])
+                    updateFriends = ', '.join(ownFriends)
+                    data = {'friends': updateFriends}
+                    firebase.patch(ownstoreEmail, data)
+                    otherFriends.remove(users[accountKey]['email'])
+                    updateOtherFriends = ', '.join(otherFriends)
+                    otherData = {'friends': updateOtherFriends}
+                    firebase.patch(storeEmail, otherData)
+                else:
+                    pass
+
+    def press(self, instance):
+        pass
 
 
 if __name__ == '__main__':
